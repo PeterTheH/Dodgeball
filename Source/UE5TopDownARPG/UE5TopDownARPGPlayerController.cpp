@@ -31,7 +31,7 @@ void AUE5TopDownARPGPlayerController::OnPlayerDied()
 
 void AUE5TopDownARPGPlayerController::BeginPlay()
 {
-	// Call the base class  
+	// Call the base class
 	Super::BeginPlay();
 
 	//Add Input Mapping Context
@@ -59,14 +59,13 @@ void AUE5TopDownARPGPlayerController::Tick(float DeltaTime)
 		MouseLookLocation = Hit.Location;
 	}
 
-	FRotator NewRotation = (MouseLookLocation - ControlledPawn->GetActorLocation()).Rotation();
-	NewRotation.Pitch = 0.0f;
-	NewRotation.Roll = 0.0f;
-	ControlledPawn->SetActorRotation(NewRotation);
-
-
+	if (ControlledPawn != nullptr) {
+		FRotator NewRotation = (MouseLookLocation - ControlledPawn->GetActorLocation()).Rotation();
+		NewRotation.Pitch = 0.0f;
+		NewRotation.Roll = 0.0f;
+		ControlledPawn->SetActorRotation(NewRotation);
+	}
 }
-
 
 void AUE5TopDownARPGPlayerController::SetupInputComponent()
 {
@@ -105,7 +104,7 @@ void AUE5TopDownARPGPlayerController::OnSetDestinationTriggered()
 {
 	// We flag that the input is being pressed
 	FollowTime += GetWorld()->GetDeltaSeconds();
-	
+
 	// We look for the location in the world where the player has pressed the input
 	FHitResult Hit;
 	bool bHitSuccessful = false;
@@ -123,7 +122,7 @@ void AUE5TopDownARPGPlayerController::OnSetDestinationTriggered()
 	{
 		CachedDestination = Hit.Location;
 	}
-	
+
 	// Move towards mouse pointer or touch
 	APawn* ControlledPawn = GetPawn();
 	if (ControlledPawn != nullptr)
@@ -192,6 +191,4 @@ void AUE5TopDownARPGPlayerController::Move(const FInputActionValue& Value)
 	const FVector MovementVector = Value.Get<FVector>();
 
 	ControlledPawn->AddMovementInput(MovementVector, 1.0);
-
-
 }

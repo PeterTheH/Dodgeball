@@ -24,9 +24,9 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	///** Returns TopDownCameraComponent subobject **/
+	/** Returns TopDownCameraComponent subobject **/
 	//FORCEINLINE class UCameraComponent* GetTopDownCameraComponent() const { return TopDownCameraComponent; }
-	///** Returns CameraBoom subobject **/
+	/** Returns CameraBoom subobject **/
 	// class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
 	FORCEINLINE class UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }
@@ -36,11 +36,11 @@ public:
 	bool ActivateAbility(FVector Location);
 
 private:
-	///** Top down camera */
+	/** Top down camera */
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	//class UCameraComponent* TopDownCameraComponent;
 
-	///** Camera boom positioning the camera above the character */
+	/** Camera boom positioning the camera above the character */
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	//class USpringArmComponent* CameraBoom;
 
