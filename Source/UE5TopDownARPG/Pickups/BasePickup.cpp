@@ -26,7 +26,8 @@ void ABasePickup::OnPickup(AUE5TopDownARPGCharacter* Character)
 }
 
 void ABasePickup::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
+{	
+
 	UE_LOG(LogUE5TopDownARPG, Log, TEXT("OverlapBegin %s %s"), *Other->GetName(), *OtherComp->GetName());
 	AUE5TopDownARPGCharacter* Character = Cast<AUE5TopDownARPGCharacter>(Other);
 	if (IsValid(Character))
