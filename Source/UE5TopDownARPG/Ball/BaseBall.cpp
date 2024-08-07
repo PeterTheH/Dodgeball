@@ -18,26 +18,38 @@ ABaseBall::ABaseBall()
 	SphereComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 	RootComponent = SphereComponent;
 
+	//MeshComponent = Cast<UStaticMeshComponent>(SphereComponent->GetChildActor;
+	//MeshComponent->RegisterComponent();
+
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BallMesh"));
+	MeshComponent->AttachToComponent(SphereComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
 	SphereComponent->OnComponentBeginOverlap.AddUniqueDynamic(this, &ABaseBall::OnBeginOverlap);
 	SphereComponent->OnComponentEndOverlap.AddUniqueDynamic(this, &ABaseBall::OnEndOverlap);
-
 }
 
 // Called when the game starts or when spawned
 void ABaseBall::BeginPlay()
 {
 	Super::BeginPlay(); 
-	
 }
 
 void ABaseBall::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogUE5TopDownARPG, Log, TEXT("OverlapBegin %s %s"), *Other->GetName(), *OtherComp->GetName());
+	if (MeshComponent != nullptr)
+	{
+		UE_LOG(LogUE5TopDownARPG, Log, TEXT("OverlapBegin %s %s"), *Other->GetName(), *OtherComp->GetName());
+		MeshComponent->SetRenderCustomDepth(true);
+	}
 }
 
 void ABaseBall::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	UE_LOG(LogUE5TopDownARPG, Log, TEXT("OverlapBegin %s %s"), *Other->GetName(), *OtherComp->GetName());
+	if (MeshComponent != nullptr)
+	{
+		UE_LOG(LogUE5TopDownARPG, Log, TEXT("OverlapEnd %s %s"), *Other->GetName(), *OtherComp->GetName());
+		MeshComponent->SetRenderCustomDepth(false);
+	}
 }
 
 // Called every frame

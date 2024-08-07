@@ -27,6 +27,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	class USphereComponent* SphereComponent;
+	UPROPERTY(EditDefaultsOnly)
+	class UStaticMeshComponent* MeshComponent;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
