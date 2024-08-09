@@ -11,6 +11,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "UE5TopDownARPG.h"
+#include "Ball/BaseBall.h"
 
 AUE5TopDownARPGPlayerController::AUE5TopDownARPGPlayerController()
 {
@@ -80,17 +81,16 @@ void AUE5TopDownARPGPlayerController::SetupInputComponent()
 		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &AUE5TopDownARPGPlayerController::OnSetDestinationTriggered);
 		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &AUE5TopDownARPGPlayerController::OnSetDestinationReleased);
 		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Canceled, this, &AUE5TopDownARPGPlayerController::OnSetDestinationReleased);
-
-		EnhancedInputComponent->BindAction(ActivateAbilityAction, ETriggerEvent::Started, this, &AUE5TopDownARPGPlayerController::OnActivateAbilityStarted);
-
-		//Movement
-		EnhancedInputComponent->BindAction(MovementAction, ETriggerEvent::Triggered, this, &AUE5TopDownARPGPlayerController::Move);
-
 		// Setup touch input events
 		//EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Started, this, &AUE5TopDownARPGPlayerController::OnInputStarted);
 		//EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Triggered, this, &AUE5TopDownARPGPlayerController::OnTouchTriggered);
 		//EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Completed, this, &AUE5TopDownARPGPlayerController::OnTouchReleased);
 		//EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Canceled, this, &AUE5TopDownARPGPlayerController::OnTouchReleased);
+
+		EnhancedInputComponent->BindAction(ActivateAbilityAction, ETriggerEvent::Started, this, &AUE5TopDownARPGPlayerController::OnPickupStarted);
+		//Movement
+		EnhancedInputComponent->BindAction(MovementAction, ETriggerEvent::Triggered, this, &AUE5TopDownARPGPlayerController::Move);
+
 	}
 }
 
@@ -182,6 +182,34 @@ void AUE5TopDownARPGPlayerController::OnActivateAbilityStarted()
 			ARPGCharacter->ActivateAbility(Hit.Location);
 		}
 	}
+}
+
+
+void AUE5TopDownARPGPlayerController::OnPickupStarted()
+{
+	UE_LOG(LogUE5TopDownARPG, Log, TEXT("OnPickupStarted"));
+	AUE5TopDownARPGCharacter* ARPGCharacter = Cast<AUE5TopDownARPGCharacter>(GetPawn());
+
+	if (IsValid(ARPGCharacter))
+	{
+		if (IsValid(ARPGCharacter->ptrBallInRange))
+		{
+			ABaseBall* ball = ARPGCharacter->ptrBallInRange;
+			USkeletalMeshComponent* skeletalMesh = ARPGCharacter->FindComponentByClass<USkeletalMeshComponent>();
+			if (skeletalMesh)
+			{
+				if (skeletalMesh->GetSocketByName("hand_lSocket"))
+				{
+					ball->MeshComponent->SetSimulatePhysics(false);
+					ball->MeshComponent->SetRenderCustomDepth(false);
+					ball->MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+					ball->MeshComponent->AttachToComponent(skeletalMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget,
+						EAttachmentRule::KeepWorld,
+						EAttachmentRule::KeepWorld, true), "hand_lSocket");
+				}
+			}
+		}
+	};
 }
 
 void AUE5TopDownARPGPlayerController::Move(const FInputActionValue& Value)

@@ -20,6 +20,7 @@
 
 AUE5TopDownARPGCharacter::AUE5TopDownARPGCharacter()
 {
+	
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -56,8 +57,10 @@ AUE5TopDownARPGCharacter::AUE5TopDownARPGCharacter()
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+	
+	ptrBallInRange = nullptr;
 
-	OnTakeAnyDamage.AddDynamic(this, &AUE5TopDownARPGCharacter::TakeAnyDamage);
+	//OnTakeAnyDamage.AddDynamic(this, &AUE5TopDownARPGCharacter::TakeAnyDamage);
 }
 
 void AUE5TopDownARPGCharacter::PostInitializeComponents()
