@@ -23,16 +23,9 @@ private:
 	TSubclassOf<class UUserWidget> EndGameWidgetClass;
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class UUserWidget> CreateSessionWidgetClass;
-
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<class UUserWidget> FindSessionWidgetClass;
-
 	UPROPERTY()
 	class UEndGameWidget* EndGameWidget;
 	UPROPERTY()
 	class UCreateSession* CreateSessionWidget;
-
-	UPROPERTY()
-	class UCreateSession* FindSessionWidget;
 	
 };
