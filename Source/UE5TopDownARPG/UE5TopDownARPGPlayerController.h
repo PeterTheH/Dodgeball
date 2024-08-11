@@ -74,14 +74,16 @@ protected:
 	void OnTouchReleased();
 	void OnActivateAbilityStarted();
 
-	void OnPickupStarted();
+	void OnUseBall();
 	void Move(const FInputActionValue& Value);
 
 private:
 	FVector CachedDestination;
+	FVector MouseLookLocation;
 
 	bool bIsTouch; // Is it a touch device
 	float FollowTime; // For how long it has been pressed
+	bool HasBall;
 };
 
 

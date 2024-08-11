@@ -41,24 +41,6 @@ void ABaseBall::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 		if (overlappedPlayer)
 		{
 			overlappedPlayer->ptrBallInRange = this;
-			//USkeletalMeshComponent* skeletalMesh = overlappedPlayer->FindComponentByClass<USkeletalMeshComponent>();
-			//if (skeletalMesh)
-			//{
-			//	if (skeletalMesh->GetSocketByName("hand_lSocket"))
-			//	{
-			//		MeshComponent->SetRenderCustomDepth(false);
-			//		MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			//		MeshComponent->AttachToComponent(skeletalMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget,
-			//			EAttachmentRule::KeepWorld,
-			//			EAttachmentRule::KeepWorld, true), "hand_lSocket");
-			//		UE_LOG(LogUE5TopDownARPG, Log, TEXT("socketTest %s %s"), *Other->GetName(), *OtherComp->GetName());
-			//	}
-
-			//}
-
-
-
-			//MeshComponent->AttachToComponent(Cast<USceneComponent>(Other), FAttachmentTransformRules::SnapToTargetNotIncludingScale);;
 			UE_LOG(LogUE5TopDownARPG, Log, TEXT("OverlapBegin %s %s"), *Other->GetName(), *OtherComp->GetName());
 		}
 	}

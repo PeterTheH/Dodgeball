@@ -38,6 +38,12 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	ABaseBall* ptrBallInRange;
+	
+	UFUNCTION()
+	void PickUp();
+
+	UFUNCTION()
+	void Throw(FVector Location);
 
 private:
 	///** Top down camera */
@@ -77,6 +83,7 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AActor> AfterDeathSpawnClass;
 
+
 	UFUNCTION()
 	void TakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigateBy, AActor* DamageCauser);
 
@@ -84,6 +91,8 @@ private:
 	void OnRep_SetHealth(float OldHealth);
 
 	void Death();
+
+	FTimerHandle TimerHandle;
 
 };
 
