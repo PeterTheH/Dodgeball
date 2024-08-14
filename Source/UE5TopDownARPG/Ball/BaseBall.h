@@ -15,6 +15,11 @@ public:
 	// Sets default values for this actor's properties
 	ABaseBall();
 
+	UPROPERTY(EditDefaultsOnly)
+	class USphereComponent* SphereComponent;
+	UPROPERTY(EditDefaultsOnly)
+	class UStaticMeshComponent* MeshComponent;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -25,12 +30,11 @@ protected:
 	UFUNCTION()
 	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	UPROPERTY(EditDefaultsOnly)
-	class USphereComponent* SphereComponent;
-	UPROPERTY(EditDefaultsOnly)
-	class UStaticMeshComponent* MeshComponent;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+
+	
 
 };

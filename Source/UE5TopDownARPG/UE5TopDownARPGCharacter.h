@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Ball/BaseBall.h"
 #include "UE5TopDownARPGCharacter.generated.h"
 
 UCLASS(Blueprintable)
@@ -34,6 +35,15 @@ public:
 	FORCEINLINE float GetHealth()const { return Health; }
 
 	bool ActivateAbility(FVector Location);
+
+	UPROPERTY(EditDefaultsOnly)
+	ABaseBall* ptrBallInRange;
+	
+	UFUNCTION()
+	void PickUp();
+
+	UFUNCTION()
+	void Throw(FVector Location);
 
 private:
 	///** Top down camera */
@@ -73,6 +83,7 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AActor> AfterDeathSpawnClass;
 
+
 	UFUNCTION()
 	void TakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigateBy, AActor* DamageCauser);
 
@@ -80,5 +91,8 @@ private:
 	void OnRep_SetHealth(float OldHealth);
 
 	void Death();
+
+	FTimerHandle TimerHandle;
+
 };
 

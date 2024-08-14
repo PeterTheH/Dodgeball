@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BaseBall.h"
+#include "../UE5TopDownARPGCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/SphereComponent.h"
 #include "../UE5TopDownARPG.h"
@@ -34,8 +35,14 @@ void ABaseBall::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 {
 	if (MeshComponent != nullptr)
 	{
-		UE_LOG(LogUE5TopDownARPG, Log, TEXT("OverlapBegin %s %s"), *Other->GetName(), *OtherComp->GetName());
 		MeshComponent->SetRenderCustomDepth(true);
+
+		AUE5TopDownARPGCharacter* overlappedPlayer = Cast<AUE5TopDownARPGCharacter>(Other);
+		if (overlappedPlayer)
+		{
+			overlappedPlayer->ptrBallInRange = this;
+			UE_LOG(LogUE5TopDownARPG, Log, TEXT("OverlapBegin %s %s"), *Other->GetName(), *OtherComp->GetName());
+		}
 	}
 }
 
@@ -43,8 +50,15 @@ void ABaseBall::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 {
 	if (MeshComponent != nullptr)
 	{
-		UE_LOG(LogUE5TopDownARPG, Log, TEXT("OverlapEnd %s %s"), *Other->GetName(), *OtherComp->GetName());
 		MeshComponent->SetRenderCustomDepth(false);
+
+		AUE5TopDownARPGCharacter* overlappedPlayer = Cast<AUE5TopDownARPGCharacter>(Other);
+		if (overlappedPlayer)
+		{
+			overlappedPlayer->ptrBallInRange = nullptr;
+			UE_LOG(LogUE5TopDownARPG, Log, TEXT("OverlapEnd %s %s"), *Other->GetName(), *OtherComp->GetName());
+
+		}
 	}
 }
 

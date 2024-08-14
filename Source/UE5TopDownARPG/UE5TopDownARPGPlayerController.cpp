@@ -11,10 +11,13 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "UE5TopDownARPG.h"
+#include "Ball/BaseBall.h"
+#include "Components/CapsuleComponent.h"
 
 AUE5TopDownARPGPlayerController::AUE5TopDownARPGPlayerController()
 {
 	bShowMouseCursor = true;
+	HasBall = false;
 	DefaultMouseCursor = EMouseCursor::Default;
 	CachedDestination = FVector::ZeroVector;
 	FollowTime = 0.f;
@@ -52,8 +55,6 @@ void AUE5TopDownARPGPlayerController::Tick(float DeltaTime)
 
 	bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
 
-	FVector MouseLookLocation;
-
 	if (bHitSuccessful)
 	{
 		MouseLookLocation = Hit.Location;
@@ -65,6 +66,8 @@ void AUE5TopDownARPGPlayerController::Tick(float DeltaTime)
 		NewRotation.Roll = 0.0f;
 		ControlledPawn->SetActorRotation(NewRotation);
 	}
+
+	//UE_LOG(LogUE5TopDownARPG, Log, TEXT("MouseLoc: %f %f %f"), MouseLookLocation.X, MouseLookLocation.Y, MouseLookLocation.Z);
 }
 
 void AUE5TopDownARPGPlayerController::SetupInputComponent()
@@ -80,17 +83,16 @@ void AUE5TopDownARPGPlayerController::SetupInputComponent()
 		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &AUE5TopDownARPGPlayerController::OnSetDestinationTriggered);
 		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &AUE5TopDownARPGPlayerController::OnSetDestinationReleased);
 		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Canceled, this, &AUE5TopDownARPGPlayerController::OnSetDestinationReleased);
-
-		EnhancedInputComponent->BindAction(ActivateAbilityAction, ETriggerEvent::Started, this, &AUE5TopDownARPGPlayerController::OnActivateAbilityStarted);
-
-		//Movement
-		EnhancedInputComponent->BindAction(MovementAction, ETriggerEvent::Triggered, this, &AUE5TopDownARPGPlayerController::Move);
-
 		// Setup touch input events
 		//EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Started, this, &AUE5TopDownARPGPlayerController::OnInputStarted);
 		//EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Triggered, this, &AUE5TopDownARPGPlayerController::OnTouchTriggered);
 		//EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Completed, this, &AUE5TopDownARPGPlayerController::OnTouchReleased);
 		//EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Canceled, this, &AUE5TopDownARPGPlayerController::OnTouchReleased);
+
+		EnhancedInputComponent->BindAction(ActivateAbilityAction, ETriggerEvent::Started, this, &AUE5TopDownARPGPlayerController::OnUseBall);
+		//Movement
+		EnhancedInputComponent->BindAction(MovementAction, ETriggerEvent::Triggered, this, &AUE5TopDownARPGPlayerController::Move);
+
 	}
 }
 
@@ -182,6 +184,31 @@ void AUE5TopDownARPGPlayerController::OnActivateAbilityStarted()
 			ARPGCharacter->ActivateAbility(Hit.Location);
 		}
 	}
+}
+
+
+void AUE5TopDownARPGPlayerController::OnUseBall()
+{
+	
+	AUE5TopDownARPGCharacter* ARPGCharacter = Cast<AUE5TopDownARPGCharacter>(GetPawn());
+
+	if (IsValid(ARPGCharacter))
+	{
+		ABaseBall* ball = ARPGCharacter->ptrBallInRange;
+		if (IsValid(ball))
+		{
+			if (HasBall)
+			{
+				HasBall = false;
+				ARPGCharacter->Throw(MouseLookLocation);
+			}
+			else
+			{
+				HasBall = true;
+				ARPGCharacter->PickUp();
+			}
+		}
+	};
 }
 
 void AUE5TopDownARPGPlayerController::Move(const FInputActionValue& Value)

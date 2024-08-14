@@ -17,9 +17,11 @@
 #include "UE5TopDownARPG.h"
 #include "UI/HealthbarWidget.h"
 #include "Net/UnrealNetwork.h"
+#include "TimerManager.h" 
 
 AUE5TopDownARPGCharacter::AUE5TopDownARPGCharacter()
 {
+	
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -56,8 +58,10 @@ AUE5TopDownARPGCharacter::AUE5TopDownARPGCharacter()
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+	
+	ptrBallInRange = nullptr;
 
-	OnTakeAnyDamage.AddDynamic(this, &AUE5TopDownARPGCharacter::TakeAnyDamage);
+	//OnTakeAnyDamage.AddDynamic(this, &AUE5TopDownARPGCharacter::TakeAnyDamage);
 }
 
 void AUE5TopDownARPGCharacter::PostInitializeComponents()
@@ -175,4 +179,35 @@ void AUE5TopDownARPGCharacter::Death()
 		PlayerController->OnPlayerDied();
 	}
 	Destroy();
+}
+
+void AUE5TopDownARPGCharacter::PickUp()
+{
+	
+	USkeletalMeshComponent* skeletalMesh = FindComponentByClass<USkeletalMeshComponent>();
+	if (skeletalMesh)
+	{
+		if (skeletalMesh->GetSocketByName("hand_lSocket"))
+		{
+			ptrBallInRange->MeshComponent->SetRenderCustomDepth(false);
+			ptrBallInRange->MeshComponent->SetSimulatePhysics(false);
+			ptrBallInRange->MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			ptrBallInRange->MeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+			ptrBallInRange->MeshComponent->AttachToComponent(skeletalMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget,
+				EAttachmentRule::KeepWorld,
+				EAttachmentRule::KeepWorld,
+				true), "hand_lSocket");
+		}
+	}
+}
+
+void AUE5TopDownARPGCharacter::Throw(FVector Location)
+{
+	FVector Direction = (Location - GetActorLocation()).GetSafeNormal();
+	Direction.Z += 0.2;
+	ptrBallInRange->MeshComponent->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+	ptrBallInRange->MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	ptrBallInRange->MeshComponent->SetSimulatePhysics(true);
+	ptrBallInRange->MeshComponent->AddImpulse(Direction * 2000, NAME_None, true);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [BallInRange = ptrBallInRange]() { BallInRange->MeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block); }, 0.05f, false);
 }
