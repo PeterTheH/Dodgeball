@@ -20,6 +20,11 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	class UStaticMeshComponent* MeshComponent;
 
+	UFUNCTION(NetMulticast, Reliable)
+	void OnPickUp(USkeletalMeshComponent* skeletalMesh);
+	UFUNCTION(NetMulticast, Reliable)
+	void OnThrow(FVector Location);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -30,9 +35,13 @@ protected:
 	UFUNCTION()
 	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	FTimerHandle TimerHandle;
+
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	virtual bool IsSupportedForNetworking() const override { return true; }
 
 
 	

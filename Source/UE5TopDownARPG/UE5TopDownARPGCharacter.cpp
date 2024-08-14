@@ -53,8 +53,8 @@ AUE5TopDownARPGCharacter::AUE5TopDownARPGCharacter()
 	//// Create a camera...
 	//TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
 	//TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
-	//TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-
+	//TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm\
+	 
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -88,6 +88,8 @@ void AUE5TopDownARPGCharacter::BeginPlay()
 		float HealthPercent = Health / MaxHealth;
 		HealthbarWidget->SetPercent(HealthPercent);
 	}
+
+
 }
 
 void AUE5TopDownARPGCharacter::Tick(float DeltaSeconds)
@@ -181,33 +183,17 @@ void AUE5TopDownARPGCharacter::Death()
 	Destroy();
 }
 
-void AUE5TopDownARPGCharacter::PickUp()
+void AUE5TopDownARPGCharacter::PickUp_Implementation()
 {
 	
 	USkeletalMeshComponent* skeletalMesh = FindComponentByClass<USkeletalMeshComponent>();
 	if (skeletalMesh)
 	{
-		if (skeletalMesh->GetSocketByName("hand_lSocket"))
-		{
-			ptrBallInRange->MeshComponent->SetRenderCustomDepth(false);
-			ptrBallInRange->MeshComponent->SetSimulatePhysics(false);
-			ptrBallInRange->MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			ptrBallInRange->MeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
-			ptrBallInRange->MeshComponent->AttachToComponent(skeletalMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget,
-				EAttachmentRule::KeepWorld,
-				EAttachmentRule::KeepWorld,
-				true), "hand_lSocket");
-		}
+		ptrBallInRange->OnPickUp(skeletalMesh);
 	}
 }
 
-void AUE5TopDownARPGCharacter::Throw(FVector Location)
+void AUE5TopDownARPGCharacter::Throw_Implementation(FVector Location)
 {
-	FVector Direction = (Location - GetActorLocation()).GetSafeNormal();
-	Direction.Z += 0.2;
-	ptrBallInRange->MeshComponent->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-	ptrBallInRange->MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	ptrBallInRange->MeshComponent->SetSimulatePhysics(true);
-	ptrBallInRange->MeshComponent->AddImpulse(Direction * 2000, NAME_None, true);
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [BallInRange = ptrBallInRange]() { BallInRange->MeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block); }, 0.05f, false);
+	ptrBallInRange->OnThrow(Location);
 }

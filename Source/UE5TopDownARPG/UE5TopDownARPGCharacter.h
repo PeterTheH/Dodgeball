@@ -39,11 +39,14 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	ABaseBall* ptrBallInRange;
 	
-	UFUNCTION()
+	UFUNCTION(Server, Reliable)
 	void PickUp();
 
-	UFUNCTION()
+	UFUNCTION(Server, Reliable)
 	void Throw(FVector Location);
+
+	//UPROPERTY(ReplicatedUsing = OnRep_CollisionResponse)
+	//TEnumAsByte<ECollisionResponse> CollisionResponse;
 
 private:
 	///** Top down camera */
@@ -91,8 +94,6 @@ private:
 	void OnRep_SetHealth(float OldHealth);
 
 	void Death();
-
-	FTimerHandle TimerHandle;
 
 };
 

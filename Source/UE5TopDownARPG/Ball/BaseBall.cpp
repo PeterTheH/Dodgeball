@@ -6,6 +6,11 @@
 #include "Components/SphereComponent.h"
 #include "../UE5TopDownARPG.h"
 
+// Called every frame
+void ABaseBall::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
 // Sets default values
 ABaseBall::ABaseBall()
 {
@@ -24,6 +29,8 @@ ABaseBall::ABaseBall()
 	SphereComponent->OnComponentBeginOverlap.AddUniqueDynamic(this, &ABaseBall::OnBeginOverlap);
 	SphereComponent->OnComponentEndOverlap.AddUniqueDynamic(this, &ABaseBall::OnEndOverlap);
 }
+
+
 
 // Called when the game starts or when spawned
 void ABaseBall::BeginPlay()
@@ -62,8 +69,23 @@ void ABaseBall::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 	}
 }
 
-// Called every frame
-void ABaseBall::Tick(float DeltaTime)
+void ABaseBall::OnPickUp_Implementation(USkeletalMeshComponent* skeletalMesh)
 {
-	Super::Tick(DeltaTime);
+	if (skeletalMesh->GetSocketByName("hand_lSocket"))
+	{
+		MeshComponent->AttachToComponent(skeletalMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, true), "hand_lSocket");
+		MeshComponent->SetSimulatePhysics(false);
+		MeshComponent->SetRenderCustomDepth(false);
+		MeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	}
+}
+
+void ABaseBall::OnThrow_Implementation(FVector Location)
+{
+	FVector Direction = (Location - GetActorLocation()).GetSafeNormal();
+	Direction.Z += 0.2;
+	MeshComponent->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+	MeshComponent->SetSimulatePhysics(true);
+	MeshComponent->AddImpulse(Direction * 2000, NAME_None, true);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]() { MeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block); }, 0.05f, false);
 }

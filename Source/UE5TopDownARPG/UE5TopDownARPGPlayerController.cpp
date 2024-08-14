@@ -21,6 +21,7 @@ AUE5TopDownARPGPlayerController::AUE5TopDownARPGPlayerController()
 	DefaultMouseCursor = EMouseCursor::Default;
 	CachedDestination = FVector::ZeroVector;
 	FollowTime = 0.f;
+	
 }
 
 void AUE5TopDownARPGPlayerController::OnPlayerDied()
@@ -66,8 +67,6 @@ void AUE5TopDownARPGPlayerController::Tick(float DeltaTime)
 		NewRotation.Roll = 0.0f;
 		ControlledPawn->SetActorRotation(NewRotation);
 	}
-
-	//UE_LOG(LogUE5TopDownARPG, Log, TEXT("MouseLoc: %f %f %f"), MouseLookLocation.X, MouseLookLocation.Y, MouseLookLocation.Z);
 }
 
 void AUE5TopDownARPGPlayerController::SetupInputComponent()
