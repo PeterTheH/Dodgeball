@@ -11,5 +11,8 @@ public class UE5TopDownARPG : ModuleRules
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore",
 			"HeadMountedDisplay", "NavigationSystem", "AIModule", "Niagara", "EnhancedInput", "GameplayTasks", 
 			"OnlineSubsystem", "OnlineSubsystemUtils" });
+
+
+        DynamicallyLoadedModuleNames.Add("OnlineSubsystemNull");
     }
 }

@@ -17,19 +17,40 @@ UCLASS()
 class UE5TOPDOWNARPG_API UCreateSession : public UUserWidget
 {
 	GENERATED_BODY()
-private:
-	FDelegateHandle OnCreateSessionCompleteDelegateHandle;
-public:
 
+private:
+
+	/* Delegate called when session created */
+	//FOnCreateSessionCompleteDelegate OnCreateSessionCompleteDelegate;
+	/* Delegate called when session started */
+	//FOnStartSessionCompleteDelegate OnStartSessionCompleteDelegate;
+
+	/** Handles to registered delegates for creating/starting a session */
+	FDelegateHandle OnCreateSessionCompleteDelegateHandle;
+	FDelegateHandle OnStartSessionCompleteDelegateHandle;
+
+	FDelegateHandle OnFindSessionsCompleteDelegateHandle;
+
+	TSharedPtr<class FOnlineSessionSettings> SessionSettings;
+	TSharedPtr<class FOnlineSessionSearch> SessionSearch;
+
+	//UCreateSession(const FObjectInitializer& ObjectInitializer);
+
+public:
 	UFUNCTION(BlueprintCallable)
-	void CreateSession(int publicConectionns);
+	void CreateSessionBP(FName SessionName, bool bIsLAN, bool bIsPresence, int32 MaxNumPlayers);
+
+	void CreateSession(TSharedPtr<const FUniqueNetId> UserId, FName SessionName, bool bIsLAN, bool bIsPresence, int32 MaxNumPlayers);
 
 	UFUNCTION()
 	void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
 
 	UFUNCTION()
-	void OnDestroySessionComplete(FName SessionName, bool bWasSuccessful);
+	void OnStartOnlineGameComplete(FName SessionName, bool bWasSuccessful);
+
+	UFUNCTION(BlueprintCallable)
+	void FindGameSessions();
 
 	UFUNCTION()
-	void OpenLevelAsListenServer();
+	void OnFindSessionsComplete(bool bWasSuccessful);
 };

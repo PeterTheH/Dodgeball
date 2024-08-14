@@ -27,12 +27,6 @@ void AUE5TopDownARPGHUD::BeginPlay()
         CreateSessionWidget->SetVisibility(ESlateVisibility::Visible);
     }
 
-    FindSessionWidget = CreateWidget<UCreateSession>(PlayerController, FindSessionWidgetClass);
-    if (IsValid(FindSessionWidget))
-    {
-        FindSessionWidget->AddToViewport();
-        FindSessionWidget->SetVisibility(ESlateVisibility::Visible);
-    }
 
   }
 }
