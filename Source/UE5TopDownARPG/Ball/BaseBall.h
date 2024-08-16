@@ -15,15 +15,22 @@ public:
 	// Sets default values for this actor's properties
 	ABaseBall();
 
+	virtual void Tick(float DeltaTime) override;
+	virtual bool IsSupportedForNetworking() const override { return true; }
+
 	UPROPERTY(EditDefaultsOnly)
 	class USphereComponent* SphereComponent;
 	UPROPERTY(EditDefaultsOnly)
+	class USphereComponent* HitOverlapComponent;
+	UPROPERTY(EditDefaultsOnly)
 	class UStaticMeshComponent* MeshComponent;
-
 	UFUNCTION(NetMulticast, Reliable)
 	void OnPickUp(USkeletalMeshComponent* skeletalMesh);
 	UFUNCTION(NetMulticast, Reliable)
 	void OnThrow(FVector Location);
+
+	bool bThrown;
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -35,13 +42,13 @@ protected:
 	UFUNCTION()
 	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	UFUNCTION()
+	void OnMeshHit(UPrimitiveComponent* OverlappedComponent, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	FTimerHandle TimerHandle;
 
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	virtual bool IsSupportedForNetworking() const override { return true; }
 
 
 	

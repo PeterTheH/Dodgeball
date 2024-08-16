@@ -185,7 +185,6 @@ void AUE5TopDownARPGCharacter::Death()
 
 void AUE5TopDownARPGCharacter::PickUp_Implementation()
 {
-	
 	USkeletalMeshComponent* skeletalMesh = FindComponentByClass<USkeletalMeshComponent>();
 	if (skeletalMesh)
 	{
@@ -195,5 +194,11 @@ void AUE5TopDownARPGCharacter::PickUp_Implementation()
 
 void AUE5TopDownARPGCharacter::Throw_Implementation(FVector Location)
 {
+	USkeletalMeshComponent* skeletalMesh = FindComponentByClass<USkeletalMeshComponent>();
 	ptrBallInRange->OnThrow(Location);
+
+	//skeletalMesh->SetCollisionProfileName("Ragdoll");
+	//skeletalMesh->SetSimulatePhysics(true);
+
+	
 }
