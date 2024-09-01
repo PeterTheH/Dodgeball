@@ -85,7 +85,8 @@ void ABaseBall::OnMeshHit(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 	if (IsValid(overlappedPlayer))
 	{
 		USkeletalMeshComponent* skeletalMesh = overlappedPlayer->FindComponentByClass<USkeletalMeshComponent>();
-		if (IsValid(skeletalMesh) && bThrown && overlappedPlayer->bIsBlueTeam != holdingPlayer->bIsBlueTeam)
+
+		if (IsValid(skeletalMesh) && bThrown && holdingPlayer && overlappedPlayer->bIsBlueTeam != holdingPlayer->bIsBlueTeam)
 		{
 			skeletalMesh->SetCollisionProfileName("Ragdoll"); // TODO: remove collision box from character
 			skeletalMesh->SetSimulatePhysics(true);

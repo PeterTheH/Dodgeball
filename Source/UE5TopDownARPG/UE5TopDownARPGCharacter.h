@@ -45,7 +45,7 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Throw(FVector Location);
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
 	bool bIsBlueTeam = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

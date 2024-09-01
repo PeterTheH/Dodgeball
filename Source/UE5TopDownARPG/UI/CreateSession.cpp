@@ -240,18 +240,8 @@ void UCreateSession::CreateSessionBP(FName SessionName, bool bIsLAN, bool bIsPre
 
 void UCreateSession::ChangeTeams(bool bIsBlue)
 {
-	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	AUE5TopDownARPGGameMode* GM = Cast<AUE5TopDownARPGGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	//APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	//AUE5TopDownARPGGameMode* GM = Cast<AUE5TopDownARPGGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 
-	if (GM)
-	{
-		GM->bIsBlueTeam = bIsBlue;
-		ASavePlayerState::SetPlayerTeam(bIsBlue);
-
-		UE_LOG(LogTemp, Warning, TEXT("bIsBlueTeam: %d"), GM->bIsBlueTeam);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to cast to AUE5TopDownARPGGameMode."));
-	}
+	ASavePlayerState::SetPlayerTeam(bIsBlue);
 }

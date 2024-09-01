@@ -113,6 +113,7 @@ void AUE5TopDownARPGCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 
 	DOREPLIFETIME(AUE5TopDownARPGCharacter, Health);
 	DOREPLIFETIME(AUE5TopDownARPGCharacter, MaxHealth);
+	DOREPLIFETIME(AUE5TopDownARPGCharacter, bIsBlueTeam);
 }
 
 bool AUE5TopDownARPGCharacter::ActivateAbility(FVector Location)
