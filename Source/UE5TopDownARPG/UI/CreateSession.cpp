@@ -6,8 +6,9 @@
 #include "OnlineSessionSettings.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Kismet/GameplayStatics.h"
-
-
+#include "../UE5TopDownARPGPlayerController.h"
+#include "../UE5TopDownARPGGameMode.h"
+#include "../SavePlayerState.h"
 
 void UCreateSession::CreateSession(TSharedPtr<const FUniqueNetId> UserId, FName SessionName, bool bIsLAN, bool bIsPresence, int32 MaxNumPlayers)
 {
@@ -61,7 +62,6 @@ void UCreateSession::CreateSession(TSharedPtr<const FUniqueNetId> UserId, FName 
 				UE_LOG(LogTemp, Warning, TEXT("Failed to create session!"));
 				// Handle the error or retry creating the session
 			}
-
 		}
 	}
 	else
@@ -170,11 +170,23 @@ void UCreateSession::OnFindSessionsComplete(bool bWasSuccessful)
 	{
 		UE_LOG(LogTemp, Log, TEXT("Found %d sessions."), SessionSearch->SearchResults.Num());
 
-		// Iterate through the search results
-		for (const FOnlineSessionSearchResult& SearchResult : SessionSearch->SearchResults)
+		FName ExistingSessionName = "SessionName";
+		if (SessionInterface->GetNamedSession(ExistingSessionName))
 		{
-			UE_LOG(LogTemp, Log, TEXT("Session found: %s"), *SearchResult.GetSessionIdStr());
-			// You can now choose to join the session or display the session information
+			SessionInterface->DestroySession(ExistingSessionName);
+		}
+
+		// Join the first session found
+		const FOnlineSessionSearchResult& SearchResult = SessionSearch->SearchResults[0];
+
+		// Bind the delegate for OnJoinSessionComplete
+		OnJoinSessionCompleteDelegateHandle = SessionInterface->AddOnJoinSessionCompleteDelegate_Handle(
+			FOnJoinSessionCompleteDelegate::CreateUObject(this, &UCreateSession::OnJoinSessionComplete)
+		);
+
+		if (!SessionInterface->JoinSession(0, TEXT("SessionName"), SearchResult))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed to join session %s."), *SearchResult.GetSessionIdStr());
 		}
 	}
 	else
@@ -183,13 +195,63 @@ void UCreateSession::OnFindSessionsComplete(bool bWasSuccessful)
 	}
 }
 
+void UCreateSession::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
+{
+	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
+	if (!OnlineSubsystem) return;
+
+	IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface();
+	if (!SessionInterface.IsValid()) return;
+
+	SessionInterface->ClearOnJoinSessionCompleteDelegate_Handle(OnJoinSessionCompleteDelegateHandle);
+
+	// Check if the join was successful
+	if (Result == EOnJoinSessionCompleteResult::Success)
+	{
+		FString ConnectString;
+		if (SessionInterface->GetResolvedConnectString(SessionName, ConnectString))
+		{
+			// Open the level with the connect string
+			APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+			if (PlayerController)
+			{
+				PlayerController->ClientTravel(ConnectString, TRAVEL_Absolute);
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed to get connect string."));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to join session: %s"), *SessionName.ToString());
+	}
+}
 
 void UCreateSession::CreateSessionBP(FName SessionName, bool bIsLAN, bool bIsPresence, int32 MaxNumPlayers)
 {
 	// Creating a local player where we can get the UserID from
 	const TSharedPtr<const FUniqueNetId> netID = UGameplayStatics::GetGameInstance(GetWorld())->GetFirstGamePlayer()->GetPreferredUniqueNetId().GetUniqueNetId();
 
-
 	// Call our custom HostSession function. GameSessionName is a GameInstance variable
 	CreateSession(netID, SessionName, bIsLAN, bIsPresence, MaxNumPlayers);
+}
+
+void UCreateSession::ChangeTeams(bool bIsBlue)
+{
+	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	AUE5TopDownARPGGameMode* GM = Cast<AUE5TopDownARPGGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	if (GM)
+	{
+		GM->bIsBlueTeam = bIsBlue;
+		ASavePlayerState::SetPlayerTeam(bIsBlue);
+
+		UE_LOG(LogTemp, Warning, TEXT("bIsBlueTeam: %d"), GM->bIsBlueTeam);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to cast to AUE5TopDownARPGGameMode."));
+	}
 }

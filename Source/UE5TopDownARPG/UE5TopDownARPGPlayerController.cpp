@@ -21,7 +21,6 @@ AUE5TopDownARPGPlayerController::AUE5TopDownARPGPlayerController()
 	DefaultMouseCursor = EMouseCursor::Default;
 	CachedDestination = FVector::ZeroVector;
 	FollowTime = 0.f;
-	
 }
 
 void AUE5TopDownARPGPlayerController::OnPlayerDied()
@@ -91,7 +90,6 @@ void AUE5TopDownARPGPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(ActivateAbilityAction, ETriggerEvent::Started, this, &AUE5TopDownARPGPlayerController::OnUseBall);
 		//Movement
 		EnhancedInputComponent->BindAction(MovementAction, ETriggerEvent::Triggered, this, &AUE5TopDownARPGPlayerController::Move);
-
 	}
 }
 
@@ -185,10 +183,8 @@ void AUE5TopDownARPGPlayerController::OnActivateAbilityStarted()
 	}
 }
 
-
 void AUE5TopDownARPGPlayerController::OnUseBall()
 {
-	
 	AUE5TopDownARPGCharacter* ARPGCharacter = Cast<AUE5TopDownARPGCharacter>(GetPawn());
 
 	if (IsValid(ARPGCharacter))

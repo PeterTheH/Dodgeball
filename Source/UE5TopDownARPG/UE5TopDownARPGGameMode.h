@@ -14,7 +14,12 @@ class AUE5TopDownARPGGameMode : public AGameModeBase
 public:
 	AUE5TopDownARPGGameMode();
 
+	UPROPERTY()
+	bool bIsBlueTeam = true;
+
 	void EndGame(bool IsWin);
+
+	virtual void PostLogin(APlayerController* NewPlayer) override;
 };
 
 

@@ -5,6 +5,7 @@
 #include "UE5TopDownARPGCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "UE5TopDownARPG.h"
+#include "SavePlayerState.h"
 
 AUE5TopDownARPGGameMode::AUE5TopDownARPGGameMode()
 {
@@ -20,7 +21,7 @@ AUE5TopDownARPGGameMode::AUE5TopDownARPGGameMode()
 
 	// set default controller to our Blueprinted controller
 	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerBPClass(TEXT("/Game/TopDown/Blueprints/BP_TopDownPlayerController"));
-	if(PlayerControllerBPClass.Class != NULL)
+	if (PlayerControllerBPClass.Class != NULL)
 	{
 		PlayerControllerClass = PlayerControllerBPClass.Class;
 	}
@@ -35,5 +36,26 @@ void AUE5TopDownARPGGameMode::EndGame(bool IsWin)
 	else
 	{
 		UE_LOG(LogUE5TopDownARPG, Log, TEXT("Lose"));
+	}
+}
+
+void AUE5TopDownARPGGameMode::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+
+	bIsBlueTeam = ASavePlayerState::GetPlayerTeam();
+
+	if (NewPlayer)
+	{
+		APawn* PlayerPawn = NewPlayer->GetPawn();
+		if (PlayerPawn)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("IsBlue: %d"), bIsBlueTeam);
+
+			if (bIsBlueTeam)
+				PlayerPawn->SetActorLocation(FVector(0.0f, 700.0f, 100.0f));
+			else
+				PlayerPawn->SetActorLocation(FVector(0.0f, -700.0f, 100.0f));
+		}
 	}
 }
