@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Containers/Queue.h"
 #include "GameFramework/Character.h"
 #include "Ball/BaseBall.h"
 #include "UE5TopDownARPGCharacter.generated.h"
@@ -36,14 +37,19 @@ public:
 
 	bool ActivateAbility(FVector Location);
 
-	UPROPERTY(EditDefaultsOnly)
-	ABaseBall* ptrBallInRange;
-	
+	TQueue<ABaseBall*> queueBallsInRange;
+
 	UFUNCTION(Server, Reliable)
 	void PickUp();
 
 	UFUNCTION(Server, Reliable)
 	void Throw(FVector Location);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bIsBlueTeam = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bIsHoldingBall = false;
 
 	//UPROPERTY(ReplicatedUsing = OnRep_CollisionResponse)
 	//TEnumAsByte<ECollisionResponse> CollisionResponse;
@@ -86,7 +92,6 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AActor> AfterDeathSpawnClass;
 
-
 	UFUNCTION()
 	void TakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigateBy, AActor* DamageCauser);
 
@@ -94,6 +99,4 @@ private:
 	void OnRep_SetHealth(float OldHealth);
 
 	void Death();
-
 };
-

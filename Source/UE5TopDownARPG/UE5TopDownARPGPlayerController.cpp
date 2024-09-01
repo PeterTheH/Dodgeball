@@ -189,18 +189,21 @@ void AUE5TopDownARPGPlayerController::OnUseBall()
 
 	if (IsValid(ARPGCharacter))
 	{
-		ABaseBall* ball = ARPGCharacter->ptrBallInRange;
-		if (IsValid(ball))
+		if (!ARPGCharacter->queueBallsInRange.IsEmpty()) 
 		{
-			if (HasBall)
+			ABaseBall* ball = (*ARPGCharacter->queueBallsInRange.Peek());
+			if (IsValid(ball))
 			{
-				HasBall = false;
-				ARPGCharacter->Throw(MouseLookLocation);
-			}
-			else
-			{
-				HasBall = true;
-				ARPGCharacter->PickUp();
+				if (HasBall)
+				{
+					HasBall = false;
+					ARPGCharacter->Throw(MouseLookLocation);
+				}
+				else
+				{
+					HasBall = true;
+					ARPGCharacter->PickUp();
+				}
 			}
 		}
 	};

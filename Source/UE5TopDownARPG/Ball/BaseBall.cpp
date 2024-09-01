@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/SphereComponent.h"
 #include "../UE5TopDownARPG.h"
+#include "../SavePlayerState.h"
 
 // Called every frame
 void ABaseBall::Tick(float DeltaTime)
@@ -26,7 +27,7 @@ ABaseBall::ABaseBall()
 	SphereComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 	HitOverlapComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	HitOverlapComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
-	
+
 	MeshComponent->SetNotifyRigidBodyCollision(true);
 	RootComponent = MeshComponent;
 
@@ -39,8 +40,6 @@ ABaseBall::ABaseBall()
 	MeshComponent->OnComponentHit.AddDynamic(this, &ABaseBall::OnHit);
 }
 
-
-
 // Called when the game starts or when spawned
 void ABaseBall::BeginPlay()
 {
@@ -51,12 +50,12 @@ void ABaseBall::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 {
 	if (MeshComponent != nullptr)
 	{
-		MeshComponent->SetRenderCustomDepth(true);
-
 		AUE5TopDownARPGCharacter* overlappedPlayer = Cast<AUE5TopDownARPGCharacter>(Other);
+
 		if (overlappedPlayer)
 		{
-			overlappedPlayer->ptrBallInRange = this;
+			MeshComponent->SetRenderCustomDepth(true);
+			overlappedPlayer->queueBallsInRange.Enqueue(this);
 			//UE_LOG(LogUE5TopDownARPG, Log, TEXT("OverlapBegin %s %s"), *Other->GetName(), *OtherComp->GetName());
 		}
 	}
@@ -71,9 +70,8 @@ void ABaseBall::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 		AUE5TopDownARPGCharacter* overlappedPlayer = Cast<AUE5TopDownARPGCharacter>(Other);
 		if (IsValid(overlappedPlayer))
 		{
-			overlappedPlayer->ptrBallInRange = nullptr;
-			//UE_LOG(LogUE5TopDownARPG, Log, TEXT("OverlapEnd %s %s"), *Other->GetName(), *OtherComp->GetName());
-
+			overlappedPlayer->queueBallsInRange.Pop();
+			UE_LOG(LogUE5TopDownARPG, Log, TEXT("Dequeue"));
 		}
 	}
 }
@@ -81,16 +79,17 @@ void ABaseBall::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 void ABaseBall::OnMeshHit(UPrimitiveComponent* OverlappedComponent, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	AUE5TopDownARPGCharacter* overlappedPlayer = Cast<AUE5TopDownARPGCharacter>(Other);
+	//AUE5TopDownARPGGameMode* GM = Cast<AUE5TopDownARPGGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+
 	//UE_LOG(LogUE5TopDownARPG, Log, TEXT("testington: %s"), *overlappedPlayer->GetName());
 	if (IsValid(overlappedPlayer))
 	{
 		USkeletalMeshComponent* skeletalMesh = overlappedPlayer->FindComponentByClass<USkeletalMeshComponent>();
-		if (IsValid(skeletalMesh) && bThrown)
+		if (IsValid(skeletalMesh) && bThrown && overlappedPlayer->bIsBlueTeam != holdingPlayer->bIsBlueTeam)
 		{
 			skeletalMesh->SetCollisionProfileName("Ragdoll"); // TODO: remove collision box from character
 			skeletalMesh->SetSimulatePhysics(true);
 		}
-
 	}
 }
 
@@ -108,6 +107,10 @@ void ABaseBall::OnPickUp_Implementation(USkeletalMeshComponent* skeletalMesh)
 		MeshComponent->SetSimulatePhysics(false);
 		MeshComponent->SetRenderCustomDepth(false);
 		MeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+
+		holdingPlayer = Cast<AUE5TopDownARPGCharacter>(skeletalMesh->GetOwner());
+
+		holdingPlayer->bIsHoldingBall = true;
 	}
 }
 
@@ -119,4 +122,7 @@ void ABaseBall::OnThrow_Implementation(FVector Location)
 	MeshComponent->SetSimulatePhysics(true);
 	MeshComponent->AddImpulse(Direction * 2000, NAME_None, true);
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]() { MeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block); bThrown = true; }, 0.05f, false);
+
+	if (holdingPlayer)
+		holdingPlayer->bIsHoldingBall = false;
 }

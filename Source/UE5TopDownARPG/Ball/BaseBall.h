@@ -6,12 +6,14 @@
 #include "GameFramework/Actor.h"
 #include "BaseBall.generated.h"
 
+class AUE5TopDownARPGCharacter;
+
 UCLASS()
 class UE5TOPDOWNARPG_API ABaseBall : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ABaseBall();
 
@@ -31,8 +33,11 @@ public:
 
 	bool bThrown;
 
+	UPROPERTY()
+	AUE5TopDownARPGCharacter* holdingPlayer;
 
 protected:
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -48,9 +53,4 @@ protected:
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	FTimerHandle TimerHandle;
-
-
-
-	
-
 };

@@ -48,14 +48,23 @@ void AUE5TopDownARPGGameMode::PostLogin(APlayerController* NewPlayer)
 	if (NewPlayer)
 	{
 		APawn* PlayerPawn = NewPlayer->GetPawn();
+		AUE5TopDownARPGCharacter* Player = Cast<AUE5TopDownARPGCharacter>(PlayerPawn);
+
 		if (PlayerPawn)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("IsBlue: %d"), bIsBlueTeam);
 
-			if (bIsBlueTeam)
+			if (bIsBlueTeam) 
+			{
+				Player->bIsBlueTeam = true;
 				PlayerPawn->SetActorLocation(FVector(0.0f, 700.0f, 100.0f));
-			else
+			}
+			else 
+			{
+				Player->bIsBlueTeam = false;
 				PlayerPawn->SetActorLocation(FVector(0.0f, -700.0f, 100.0f));
+
+			}
 		}
 	}
 }

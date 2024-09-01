@@ -17,11 +17,10 @@
 #include "UE5TopDownARPG.h"
 #include "UI/HealthbarWidget.h"
 #include "Net/UnrealNetwork.h"
-#include "TimerManager.h" 
+#include "TimerManager.h"
 
 AUE5TopDownARPGCharacter::AUE5TopDownARPGCharacter()
 {
-	
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -54,12 +53,12 @@ AUE5TopDownARPGCharacter::AUE5TopDownARPGCharacter()
 	//TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
 	//TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	//TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm\
-	 
+
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
-	
-	ptrBallInRange = nullptr;
+
+	//ptrBallInRange = nullptr;
 
 	//OnTakeAnyDamage.AddDynamic(this, &AUE5TopDownARPGCharacter::TakeAnyDamage);
 }
@@ -78,7 +77,7 @@ void AUE5TopDownARPGCharacter::PostInitializeComponents()
 void AUE5TopDownARPGCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	if (AbilityTemplate != nullptr)
 	{
 		AbilityInstance = NewObject<UBaseAbility>(this, AbilityTemplate);
@@ -88,26 +87,24 @@ void AUE5TopDownARPGCharacter::BeginPlay()
 		float HealthPercent = Health / MaxHealth;
 		HealthbarWidget->SetPercent(HealthPercent);
 	}
-
-
 }
 
 void AUE5TopDownARPGCharacter::Tick(float DeltaSeconds)
 {
-    Super::Tick(DeltaSeconds);
+	Super::Tick(DeltaSeconds);
 
-		/*
-		FHitResult HitResult;
-		FVector TraceStartLocation = GetActorLocation();
-		FVector TraceEndLocation = GetActorLocation() + GetActorForwardVector() * 300.0f;
-		FCollisionQueryParams Params;
-		Params.AddIgnoredActor(this);
+	/*
+	FHitResult HitResult;
+	FVector TraceStartLocation = GetActorLocation();
+	FVector TraceEndLocation = GetActorLocation() + GetActorForwardVector() * 300.0f;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
 
-		if (GetWorld()->LineTraceSingleByChannel(HitResult, TraceStartLocation, TraceEndLocation, ECollisionChannel::ECC_WorldDynamic, Params))
-		{
-			UE_LOG(LogUE5TopDownARPG, Log, TEXT("TraceHit %s %s"), *HitResult.GetActor()->GetName(), *HitResult.GetComponent()->GetName());
-		}
-		*/
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, TraceStartLocation, TraceEndLocation, ECollisionChannel::ECC_WorldDynamic, Params))
+	{
+		UE_LOG(LogUE5TopDownARPG, Log, TEXT("TraceHit %s %s"), *HitResult.GetActor()->GetName(), *HitResult.GetComponent()->GetName());
+	}
+	*/
 }
 
 void AUE5TopDownARPGCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -188,17 +185,15 @@ void AUE5TopDownARPGCharacter::PickUp_Implementation()
 	USkeletalMeshComponent* skeletalMesh = FindComponentByClass<USkeletalMeshComponent>();
 	if (skeletalMesh)
 	{
-		ptrBallInRange->OnPickUp(skeletalMesh);
+		(*queueBallsInRange.Peek())->OnPickUp(skeletalMesh);
 	}
 }
 
 void AUE5TopDownARPGCharacter::Throw_Implementation(FVector Location)
 {
 	USkeletalMeshComponent* skeletalMesh = FindComponentByClass<USkeletalMeshComponent>();
-	ptrBallInRange->OnThrow(Location);
+	(*queueBallsInRange.Peek())->OnThrow(Location);
 
 	//skeletalMesh->SetCollisionProfileName("Ragdoll");
 	//skeletalMesh->SetSimulatePhysics(true);
-
-	
 }
