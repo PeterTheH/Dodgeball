@@ -213,12 +213,9 @@ void UCreateSession::OnJoinSessionComplete(FName SessionName, EOnJoinSessionComp
 		{
 			// Open the level with the connect string
 			APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-
-			UE_LOG(LogTemp, Warning, TEXT("ConnectString: %s"), *ConnectString);
-
 			if (PlayerController)
 			{
-				PlayerController->ClientTravel(ConnectString, TRAVEL_Absolute);
+				PlayerController->ClientTravel(TEXT("26.230.212.13"), TRAVEL_Absolute);
 			}
 		}
 		else

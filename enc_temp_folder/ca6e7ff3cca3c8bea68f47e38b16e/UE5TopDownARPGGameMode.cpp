@@ -45,7 +45,6 @@ void AUE5TopDownARPGGameMode::PostLogin(APlayerController* NewPlayer)
 
 	bIsBlueTeam = ASavePlayerState::GetPlayerTeam();
 
-
 	if (NewPlayer)
 	{
 		APawn* PlayerPawn = NewPlayer->GetPawn();
