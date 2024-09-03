@@ -141,6 +141,38 @@ bool AUE5TopDownARPGCharacter::ActivateAbility(FVector Location)
 	}
 	return false;
 }
+void AUE5TopDownARPGCharacter::ResetPlayerHelper()
+{
+
+	UE_LOG(LogUE5TopDownARPG, Warning, TEXT("ResetPlayerLog"));
+	USkeletalMeshComponent* skeletalMesh = FindComponentByClass<USkeletalMeshComponent>();
+	UCapsuleComponent* capsuleComponent = FindComponentByClass<UCapsuleComponent>();
+
+	skeletalMesh->SetSimulatePhysics(false);
+	skeletalMesh->SetCollisionProfileName("CharacterMesh");
+	skeletalMesh->AttachToComponent(capsuleComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	skeletalMesh->SetRelativeLocation(FVector(0, 0, -88));
+	skeletalMesh->SetRelativeRotation(FRotator(0, -90, 0));
+	if (bIsBlueTeam)
+	{
+		SetActorLocation(FVector(0.0f, 700.0f, 100.0f));
+	}
+	else
+	{
+		SetActorLocation(FVector(0.0f, -700.0f, 100.0f));
+	}
+}
+void AUE5TopDownARPGCharacter::Multicast_ResetPlayer_Implementation()
+{
+	ResetPlayerHelper();
+}
+void AUE5TopDownARPGCharacter::Server_ResetPlayer_Implementation()
+{
+	ResetPlayerHelper();
+	Multicast_ResetPlayer();
+
+
+}
 
 void AUE5TopDownARPGCharacter::TakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigateBy, AActor* DamageCauser)
 {
@@ -162,6 +194,28 @@ void AUE5TopDownARPGCharacter::TakeAnyDamage(AActor* DamagedActor, float Damage,
 	}
 }
 
+void AUE5TopDownARPGCharacter::PickUp_Implementation()
+{
+	USkeletalMeshComponent* skeletalMesh = FindComponentByClass<USkeletalMeshComponent>();
+	if (skeletalMesh)
+	{
+		UE_LOG(LogUE5TopDownARPG, Log, TEXT("Picked Ball"));
+		if (queueBallsInRange.Peek())
+		{
+			(*queueBallsInRange.Peek())->OnPickUp(skeletalMesh);
+			queueBallsInRange.Dequeue(ABallInHand);
+		}
+	}
+}
+
+void AUE5TopDownARPGCharacter::Throw_Implementation(FVector Location)
+{
+	ABallInHand->OnThrow(Location);
+}
+
+
+
+
 void AUE5TopDownARPGCharacter::OnRep_SetHealth(float OldHealth)
 {
 	if (GEngine)
@@ -169,7 +223,6 @@ void AUE5TopDownARPGCharacter::OnRep_SetHealth(float OldHealth)
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Health %f"), Health));
 	}
 }
-
 void AUE5TopDownARPGCharacter::Death()
 {
 	UE_LOG(LogUE5TopDownARPG, Log, TEXT("Death"));
@@ -196,27 +249,4 @@ void AUE5TopDownARPGCharacter::Death()
 		PlayerController->OnPlayerDied();
 	}
 	Destroy();
-}
-
-void AUE5TopDownARPGCharacter::PickUp_Implementation()
-{
-	USkeletalMeshComponent* skeletalMesh = FindComponentByClass<USkeletalMeshComponent>();
-	if (skeletalMesh)
-	{
-		UE_LOG(LogUE5TopDownARPG, Log, TEXT("Picked Ball"));
-		if (queueBallsInRange.Peek())
-		{
-			(*queueBallsInRange.Peek())->OnPickUp(skeletalMesh);
-			queueBallsInRange.Dequeue(ABallInHand);
-		}
-	}
-}
-
-void AUE5TopDownARPGCharacter::Throw_Implementation(FVector Location)
-{
-	ABallInHand->OnThrow(Location);
-
-	//USkeletalMeshComponent* skeletalMesh = FindComponentByClass<USkeletalMeshComponent>();
-	//skeletalMesh->SetCollisionProfileName("Ragdoll");
-	//skeletalMesh->SetSimulatePhysics(true);
 }

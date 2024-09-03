@@ -46,6 +46,13 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Throw(FVector Location);
 
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_ResetPlayer();
+
+	UFUNCTION(Server, Reliable)
+	void Server_ResetPlayer();
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
 	bool bIsBlueTeam = true;
 
@@ -103,4 +110,5 @@ private:
 
 	UFUNCTION(Server, Reliable)
 	void ServerSetTeam(bool bNewIsBlueTeam);
+	void ResetPlayerHelper();
 };

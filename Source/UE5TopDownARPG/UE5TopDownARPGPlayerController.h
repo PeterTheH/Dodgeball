@@ -45,6 +45,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputAction* ActivateAbilityAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* RestartPlayer;
+
 	
 	//For Movement
 
@@ -74,6 +77,7 @@ protected:
 	void OnTouchReleased();
 	void OnActivateAbilityStarted();
 
+	void OnRestartPlayer();
 	void OnUseBall();
 	void Move(const FInputActionValue& Value);
 

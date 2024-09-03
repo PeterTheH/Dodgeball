@@ -88,6 +88,8 @@ void AUE5TopDownARPGPlayerController::SetupInputComponent()
 		//EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Canceled, this, &AUE5TopDownARPGPlayerController::OnTouchReleased);
 
 		EnhancedInputComponent->BindAction(ActivateAbilityAction, ETriggerEvent::Started, this, &AUE5TopDownARPGPlayerController::OnUseBall);
+		EnhancedInputComponent->BindAction(RestartPlayer, ETriggerEvent::Started, this, &AUE5TopDownARPGPlayerController::OnRestartPlayer);
+		
 		//Movement
 		EnhancedInputComponent->BindAction(MovementAction, ETriggerEvent::Triggered, this, &AUE5TopDownARPGPlayerController::Move);
 	}
@@ -183,6 +185,12 @@ void AUE5TopDownARPGPlayerController::OnActivateAbilityStarted()
 	}
 }
 
+void AUE5TopDownARPGPlayerController::OnRestartPlayer()
+{
+	AUE5TopDownARPGCharacter* ARPGCharacter = Cast<AUE5TopDownARPGCharacter>(GetPawn());
+	ARPGCharacter->Server_ResetPlayer();
+}
+
 void AUE5TopDownARPGPlayerController::OnUseBall()
 {
 	AUE5TopDownARPGCharacter* ARPGCharacter = Cast<AUE5TopDownARPGCharacter>(GetPawn());
@@ -198,25 +206,6 @@ void AUE5TopDownARPGPlayerController::OnUseBall()
 		{
 			ARPGCharacter->PickUp();
 		}
-
-
-		/*if (!ARPGCharacter->queueBallsInRange.IsEmpty()) 
-		{
-			ABaseBall* ball = (*ARPGCharacter->queueBallsInRange.Peek());
-			if (IsValid(ball))
-			{
-				if (HasBall)
-				{
-					HasBall = false;
-					ARPGCharacter->Throw(MouseLookLocation);
-				}
-				else
-				{
-					HasBall = true;
-					ARPGCharacter->PickUp();
-				}
-			}
-		}*/
 	};
 }
 
