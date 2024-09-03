@@ -189,7 +189,18 @@ void AUE5TopDownARPGPlayerController::OnUseBall()
 
 	if (IsValid(ARPGCharacter))
 	{
-		if (!ARPGCharacter->queueBallsInRange.IsEmpty()) 
+		UE_LOG(LogUE5TopDownARPG, Log, TEXT("Input detected"));
+		if (ARPGCharacter->bIsHoldingBall)
+		{
+			ARPGCharacter->Throw(MouseLookLocation);
+		}
+		else
+		{
+			ARPGCharacter->PickUp();
+		}
+
+
+		/*if (!ARPGCharacter->queueBallsInRange.IsEmpty()) 
 		{
 			ABaseBall* ball = (*ARPGCharacter->queueBallsInRange.Peek());
 			if (IsValid(ball))
@@ -205,7 +216,7 @@ void AUE5TopDownARPGPlayerController::OnUseBall()
 					ARPGCharacter->PickUp();
 				}
 			}
-		}
+		}*/
 	};
 }
 

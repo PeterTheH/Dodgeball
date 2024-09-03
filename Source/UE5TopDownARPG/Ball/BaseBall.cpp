@@ -63,15 +63,23 @@ void ABaseBall::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 
 void ABaseBall::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (MeshComponent)
+	if (!bIsHeld)
 	{
-		MeshComponent->SetRenderCustomDepth(false);
-
-		AUE5TopDownARPGCharacter* overlappedPlayer = Cast<AUE5TopDownARPGCharacter>(Other);
-		if (IsValid(overlappedPlayer))
+		if (MeshComponent)
 		{
-			overlappedPlayer->queueBallsInRange.Pop();
-			UE_LOG(LogUE5TopDownARPG, Log, TEXT("Dequeue"));
+			MeshComponent->SetRenderCustomDepth(false);
+
+			AUE5TopDownARPGCharacter* overlappedPlayer = Cast<AUE5TopDownARPGCharacter>(Other);
+			if (IsValid(overlappedPlayer))
+			{
+
+				if (overlappedPlayer->queueBallsInRange.Peek())
+				{
+					ABaseBall* front = *overlappedPlayer->queueBallsInRange.Peek();
+					UE_LOG(LogUE5TopDownARPG, Log, TEXT("Ended Overlap with Ball: %s"), *front->GetName());
+				}
+				overlappedPlayer->queueBallsInRange.Pop();
+			}
 		}
 	}
 }
@@ -110,8 +118,10 @@ void ABaseBall::OnPickUp_Implementation(USkeletalMeshComponent* skeletalMesh)
 		MeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 
 		holdingPlayer = Cast<AUE5TopDownARPGCharacter>(skeletalMesh->GetOwner());
-
 		holdingPlayer->bIsHoldingBall = true;
+
+		bIsHeld = true;
+
 	}
 }
 
@@ -122,8 +132,18 @@ void ABaseBall::OnThrow_Implementation(FVector Location)
 	MeshComponent->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 	MeshComponent->SetSimulatePhysics(true);
 	MeshComponent->AddImpulse(Direction * 2000, NAME_None, true);
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]() { MeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block); bThrown = true; }, 0.05f, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, 
+		[this]() { 
+			MeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block); 
+			bIsHeld = false;
+			bThrown = true;}, 0.05f, false);
 
 	if (holdingPlayer)
+	{
 		holdingPlayer->bIsHoldingBall = false;
+		//holdingPlayer->queueBallsInRange.Pop();
+		UE_LOG(LogUE5TopDownARPG, Log, TEXT("Threw Ball"));
+		//UE_LOG(LogTemp, Log, TEXT("IsQueue empty: %s"), holdingPlayer->queueBallsInRange.Peek() == nullptr ? TEXT("true") : TEXT("false"));
+
+	}
 }

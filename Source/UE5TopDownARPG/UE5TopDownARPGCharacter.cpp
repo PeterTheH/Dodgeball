@@ -186,15 +186,20 @@ void AUE5TopDownARPGCharacter::PickUp_Implementation()
 	USkeletalMeshComponent* skeletalMesh = FindComponentByClass<USkeletalMeshComponent>();
 	if (skeletalMesh)
 	{
-		(*queueBallsInRange.Peek())->OnPickUp(skeletalMesh);
+		UE_LOG(LogUE5TopDownARPG, Log, TEXT("Picked Ball"));
+		if (queueBallsInRange.Peek())
+		{
+			(*queueBallsInRange.Peek())->OnPickUp(skeletalMesh);
+			queueBallsInRange.Dequeue(ABallInHand);
+		}
 	}
 }
 
 void AUE5TopDownARPGCharacter::Throw_Implementation(FVector Location)
 {
-	USkeletalMeshComponent* skeletalMesh = FindComponentByClass<USkeletalMeshComponent>();
-	(*queueBallsInRange.Peek())->OnThrow(Location);
+	ABallInHand->OnThrow(Location);
 
+	//USkeletalMeshComponent* skeletalMesh = FindComponentByClass<USkeletalMeshComponent>();
 	//skeletalMesh->SetCollisionProfileName("Ragdoll");
 	//skeletalMesh->SetSimulatePhysics(true);
 }
