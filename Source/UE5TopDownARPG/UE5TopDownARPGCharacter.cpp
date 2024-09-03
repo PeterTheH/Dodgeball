@@ -18,6 +18,7 @@
 #include "UI/HealthbarWidget.h"
 #include "Net/UnrealNetwork.h"
 #include "TimerManager.h"
+#include "SavePlayerState.h"
 
 AUE5TopDownARPGCharacter::AUE5TopDownARPGCharacter()
 {
@@ -35,13 +36,6 @@ AUE5TopDownARPGCharacter::AUE5TopDownARPGCharacter()
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
 
-	// Create a camera boom...
-	//CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	//CameraBoom->SetupAttachment(RootComponent);
-	//CameraBoom->SetUsingAbsoluteRotation(true); // Don't want arm to rotate when character does
-	//CameraBoom->TargetArmLength = 800.f;
-	//CameraBoom->SetRelativeRotation(FRotator(-60.f, 0.f, 0.f));
-	//CameraBoom->bDoCollisionTest = false; // Don't want to pull camera in when it collides with level
 
 	WidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetComponent"));
 	WidgetComponent->SetCastShadow(false);
@@ -49,18 +43,9 @@ AUE5TopDownARPGCharacter::AUE5TopDownARPGCharacter()
 	WidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	WidgetComponent->SetupAttachment(RootComponent);
 
-	//// Create a camera...
-	//TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
-	//TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
-	//TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm\
-
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
-
-	//ptrBallInRange = nullptr;
-
-	//OnTakeAnyDamage.AddDynamic(this, &AUE5TopDownARPGCharacter::TakeAnyDamage);
 }
 
 void AUE5TopDownARPGCharacter::PostInitializeComponents()
@@ -77,6 +62,23 @@ void AUE5TopDownARPGCharacter::PostInitializeComponents()
 void AUE5TopDownARPGCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (HasAuthority())
+	{
+		bIsBlueTeam = ASavePlayerState::GetPlayerTeam();
+		UE_LOG(LogUE5TopDownARPG, Log, TEXT("bIsBlueTeam %d"), bIsBlueTeam);
+	}
+	
+	if (bIsBlueTeam)
+	{
+		SetActorLocation(FVector(0.0f, 700.0f, 100.0f));
+	}
+	else
+	{
+		SetActorLocation(FVector(0.0f, -700.0f, 100.0f));
+	}
+	
+	//ASavePlayerState::SetSpawned(true);
 
 	if (AbilityTemplate != nullptr)
 	{

@@ -15,6 +15,10 @@ public:
 	static bool GetPlayerTeam();
 	static void SetPlayerTeam(bool bNew);
 
+	static bool GetSpawned();
+	static void SetSpawned(bool bNew);
+
 private:
 	static bool bIsBlueTeam;
+	static bool bIsSpawned;
 };

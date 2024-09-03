@@ -3,6 +3,7 @@
 #include "UE5TopDownARPGGameMode.h"
 #include "UE5TopDownARPGPlayerController.h"
 #include "UE5TopDownARPGCharacter.h"
+#include "UE5TopDownARPGGameStateBase.h"
 #include "UObject/ConstructorHelpers.h"
 #include "UE5TopDownARPG.h"
 #include "SavePlayerState.h"
@@ -11,6 +12,8 @@ AUE5TopDownARPGGameMode::AUE5TopDownARPGGameMode()
 {
 	// use our custom PlayerController class
 	PlayerControllerClass = AUE5TopDownARPGPlayerController::StaticClass();
+
+	GameStateClass = AUE5TopDownARPGGameStateBase::StaticClass();
 
 	// set default pawn class to our Blueprinted character
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/TopDown/Blueprints/BP_TopDownCharacter"));
@@ -25,6 +28,13 @@ AUE5TopDownARPGGameMode::AUE5TopDownARPGGameMode()
 	{
 		PlayerControllerClass = PlayerControllerBPClass.Class;
 	}
+
+	static ConstructorHelpers::FClassFinder<AGameStateBase> GameStateBPClass(TEXT("/Game/TopDown/Blueprints/BP_GameState"));
+	if (GameStateBPClass.Class != NULL)
+	{
+		GameStateClass = GameStateBPClass.Class;
+	}
+
 }
 
 void AUE5TopDownARPGGameMode::EndGame(bool IsWin)
@@ -43,8 +53,8 @@ void AUE5TopDownARPGGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
-	bIsBlueTeam = ASavePlayerState::GetPlayerTeam();
-
+	//bIsBlueTeam = ASavePlayerState::GetPlayerTeam();
+	/*bIsBlueTeam = GetWorld()->GetGameState<AUE5TopDownARPGGameStateBase>()->isBlueTeam;
 
 	if (NewPlayer)
 	{
@@ -55,17 +65,16 @@ void AUE5TopDownARPGGameMode::PostLogin(APlayerController* NewPlayer)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("IsBlue: %d"), bIsBlueTeam);
 
-			if (bIsBlueTeam) 
+			if (bIsBlueTeam)
 			{
 				Player->bIsBlueTeam = true;
 				PlayerPawn->SetActorLocation(FVector(0.0f, 700.0f, 100.0f));
 			}
-			else 
+			else
 			{
 				Player->bIsBlueTeam = false;
 				PlayerPawn->SetActorLocation(FVector(0.0f, -700.0f, 100.0f));
-
 			}
 		}
-	}
+	}*/
 }

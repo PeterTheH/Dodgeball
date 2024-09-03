@@ -3,6 +3,7 @@
 #include "SavePlayerState.h"
 
 bool ASavePlayerState::bIsBlueTeam = true;
+bool ASavePlayerState::bIsSpawned= false;
 
 bool ASavePlayerState::GetPlayerTeam()
 {
@@ -12,4 +13,14 @@ bool ASavePlayerState::GetPlayerTeam()
 void ASavePlayerState::SetPlayerTeam(bool bNew)
 {
 	bIsBlueTeam = bNew;
+}
+
+bool ASavePlayerState::GetSpawned()
+{
+	return bIsSpawned;
+}
+
+void ASavePlayerState::SetSpawned(bool bNew)
+{
+	bIsSpawned = bNew;
 }

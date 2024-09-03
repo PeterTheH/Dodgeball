@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "../UE5TopDownARPGPlayerController.h"
 #include "../UE5TopDownARPGGameMode.h"
+#include "../UE5TopDownARPGGameStateBase.h"
 #include "../SavePlayerState.h"
 
 void UCreateSession::CreateSession(TSharedPtr<const FUniqueNetId> UserId, FName SessionName, bool bIsLAN, bool bIsPresence, int32 MaxNumPlayers)
@@ -247,4 +248,7 @@ void UCreateSession::ChangeTeams(bool bIsBlue)
 	//AUE5TopDownARPGGameMode* GM = Cast<AUE5TopDownARPGGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 
 	ASavePlayerState::SetPlayerTeam(bIsBlue);
+
+	//AUE5TopDownARPGGameStateBase* GameState = GetWorld()->GetGameState<AUE5TopDownARPGGameStateBase>();
+	//GameState->isBlueTeam = bIsBlue;
 }
