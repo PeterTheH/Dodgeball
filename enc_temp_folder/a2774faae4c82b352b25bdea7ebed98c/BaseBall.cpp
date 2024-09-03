@@ -96,7 +96,6 @@ void ABaseBall::OnMeshHit(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 
 		if (IsValid(skeletalMesh) && bThrown && holdingPlayer && overlappedPlayer->bIsBlueTeam != holdingPlayer->bIsBlueTeam)
 		{
-			overlappedPlayer->bIsDead = true;
 			skeletalMesh->SetCollisionProfileName("Ragdoll"); // TODO: remove collision box from character
 			skeletalMesh->SetSimulatePhysics(true);
 		}
@@ -109,9 +108,9 @@ void ABaseBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPr
 	bThrown = false;
 }
 
-void ABaseBall::OnPickUp_Implementation(USkeletalMeshComponent* skeletalMesh, bool bIsDead)
+void ABaseBall::OnPickUp_Implementation(USkeletalMeshComponent* skeletalMesh)
 {
-	if (skeletalMesh->GetSocketByName("hand_lSocket") && !bIsDead)
+	if (skeletalMesh->GetSocketByName("hand_lSocket"))
 	{
 		MeshComponent->AttachToComponent(skeletalMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, true), "hand_lSocket");
 		MeshComponent->SetSimulatePhysics(false);
@@ -122,6 +121,7 @@ void ABaseBall::OnPickUp_Implementation(USkeletalMeshComponent* skeletalMesh, bo
 		holdingPlayer->bIsHoldingBall = true;
 
 		bIsHeld = true;
+
 	}
 }
 
@@ -142,7 +142,7 @@ void ABaseBall::OnThrow_Implementation(FVector Location)
 	{
 		holdingPlayer->bIsHoldingBall = false;
 		//holdingPlayer->queueBallsInRange.Pop();
-		//UE_LOG(LogUE5TopDownARPG, Log, TEXT("Threw Ball"));
+		UE_LOG(LogUE5TopDownARPG, Log, TEXT("Threw Ball"));
 		//UE_LOG(LogTemp, Log, TEXT("IsQueue empty: %s"), holdingPlayer->queueBallsInRange.Peek() == nullptr ? TEXT("true") : TEXT("false"));
 
 	}

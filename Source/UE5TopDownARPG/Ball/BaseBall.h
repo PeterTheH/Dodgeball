@@ -27,7 +27,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	class UStaticMeshComponent* MeshComponent;
 	UFUNCTION(NetMulticast, Reliable)
-	void OnPickUp(USkeletalMeshComponent* skeletalMesh);
+	void OnPickUp(USkeletalMeshComponent* skeletalMesh, bool bIsDead);
 	UFUNCTION(NetMulticast, Reliable)
 	void OnThrow(FVector Location);
 

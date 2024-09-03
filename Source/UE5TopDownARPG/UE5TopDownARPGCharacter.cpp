@@ -156,6 +156,7 @@ void AUE5TopDownARPGCharacter::ResetPlayerHelper()
 	{
 		SetActorLocation(FVector(0.0f, -700.0f, 100.0f));
 	}
+	bIsDead = false;
 }
 void AUE5TopDownARPGCharacter::Multicast_ResetPlayer_Implementation()
 {
@@ -230,7 +231,7 @@ void AUE5TopDownARPGCharacter::PickUp_Implementation()
 		UE_LOG(LogUE5TopDownARPG, Log, TEXT("Picked Ball"));
 		if (queueBallsInRange.Peek())
 		{
-			(*queueBallsInRange.Peek())->OnPickUp(skeletalMesh);
+			(*queueBallsInRange.Peek())->OnPickUp(skeletalMesh, bIsDead);
 			queueBallsInRange.Dequeue(ABallInHand);
 		}
 	}
