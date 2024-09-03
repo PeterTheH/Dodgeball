@@ -46,7 +46,6 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Throw(FVector Location);
 
-
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_ResetPlayer();
 
