@@ -73,6 +73,14 @@ void AUE5TopDownARPGCharacter::BeginPlay()
 
 		UE_LOG(LogUE5TopDownARPG, Warning, TEXT("IsLocallyControlled: bIsBlueTeam %d"), bIsBlueTeam);
 
+		if (bIsBlueTeam)
+		{
+			SetActorLocation(FVector(0.0f, 700.0f, 100.0f));
+		}
+		else
+		{
+			SetActorLocation(FVector(0.0f, -700.0f, 100.0f));
+		}
 	}
 
 	if (AbilityTemplate != nullptr)
@@ -91,15 +99,6 @@ void AUE5TopDownARPGCharacter::ServerSetTeam_Implementation(bool bNewIsBlueTeam)
 {
 	// This code runs on the server
 	bIsBlueTeam = bNewIsBlueTeam;
-
-	if (bIsBlueTeam)
-	{
-		SetActorLocation(FVector(0.0f, 700.0f, 100.0f));
-	}
-	else
-	{
-		SetActorLocation(FVector(0.0f, -700.0f, 100.0f));
-	}
 
 	// You can add server-side logic here if needed
 	UE_LOG(LogTemp, Warning, TEXT("Server: bIsBlueTeam set to %d"), bIsBlueTeam);

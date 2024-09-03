@@ -101,6 +101,6 @@ private:
 
 	void Death();
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerSetTeam(bool bNewIsBlueTeam);
 };
