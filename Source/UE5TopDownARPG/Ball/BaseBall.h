@@ -32,6 +32,7 @@ public:
 	void OnThrow(FVector Location);
 
 	bool bThrown;
+	bool bIsHeld;
 
 	UPROPERTY()
 	AUE5TopDownARPGCharacter* holdingPlayer;

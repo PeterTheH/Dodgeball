@@ -38,6 +38,7 @@ public:
 	bool ActivateAbility(FVector Location);
 
 	TQueue<ABaseBall*> queueBallsInRange;
+	ABaseBall* ABallInHand;
 
 	UFUNCTION(Server, Reliable)
 	void PickUp();
