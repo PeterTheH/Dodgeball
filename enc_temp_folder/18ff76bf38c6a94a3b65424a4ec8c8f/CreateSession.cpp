@@ -133,10 +133,8 @@ void UCreateSession::OnStartOnlineGameComplete(FName SessionName, bool bWasSucce
 	}
 }
 
-void UCreateSession::FindGameSessions(FString OptionalIPAddr)
+void UCreateSession::FindGameSessions()
 {
-	OptionalIP = OptionalIPAddr;
-
 	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
 	if (!OnlineSubsystem) return;
 

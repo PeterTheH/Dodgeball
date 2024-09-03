@@ -53,7 +53,7 @@ public:
 	void OnStartOnlineGameComplete(FName SessionName, bool bWasSuccessful);
 
 	UFUNCTION(BlueprintCallable)
-	void FindGameSessions(FString OptionalIPAddr = "");
+	void FindGameSessions();
 
 	UFUNCTION()
 	void OnFindSessionsComplete(bool bWasSuccessful);
