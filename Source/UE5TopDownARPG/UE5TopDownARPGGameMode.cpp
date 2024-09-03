@@ -13,8 +13,6 @@ AUE5TopDownARPGGameMode::AUE5TopDownARPGGameMode()
 	// use our custom PlayerController class
 	PlayerControllerClass = AUE5TopDownARPGPlayerController::StaticClass();
 
-	GameStateClass = AUE5TopDownARPGGameStateBase::StaticClass();
-
 	// set default pawn class to our Blueprinted character
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/TopDown/Blueprints/BP_TopDownCharacter"));
 	if (PlayerPawnBPClass.Class != nullptr)
@@ -28,13 +26,6 @@ AUE5TopDownARPGGameMode::AUE5TopDownARPGGameMode()
 	{
 		PlayerControllerClass = PlayerControllerBPClass.Class;
 	}
-
-	static ConstructorHelpers::FClassFinder<AGameStateBase> GameStateBPClass(TEXT("/Game/TopDown/Blueprints/BP_GameState"));
-	if (GameStateBPClass.Class != NULL)
-	{
-		GameStateClass = GameStateBPClass.Class;
-	}
-
 }
 
 void AUE5TopDownARPGGameMode::EndGame(bool IsWin)
