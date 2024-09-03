@@ -220,3 +220,15 @@ void AUE5TopDownARPGCharacter::Throw_Implementation(FVector Location)
 	//skeletalMesh->SetCollisionProfileName("Ragdoll");
 	//skeletalMesh->SetSimulatePhysics(true);
 }
+
+void AUE5TopDownARPGCharacter::Restart()
+{
+	USkeletalMeshComponent* skeletalMesh = FindComponentByClass<USkeletalMeshComponent>();
+	UCapsuleComponent* capsuleComponent = GetCapsuleComponent();
+	if (IsValid(skeletalMesh))
+	{
+		skeletalMesh->SetCollisionProfileName("CharacterMesh");
+		skeletalMesh->SetSimulatePhysics(false);
+
+	}
+}
