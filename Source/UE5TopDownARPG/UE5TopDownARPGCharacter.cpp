@@ -36,7 +36,6 @@ AUE5TopDownARPGCharacter::AUE5TopDownARPGCharacter()
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
 
-
 	WidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetComponent"));
 	WidgetComponent->SetCastShadow(false);
 	WidgetComponent->SetReceivesDecals(false);
@@ -72,7 +71,6 @@ void AUE5TopDownARPGCharacter::BeginPlay()
 		ServerSetTeam(bIsBlueTeam);
 
 		UE_LOG(LogUE5TopDownARPG, Warning, TEXT("IsLocallyControlled: bIsBlueTeam %d"), bIsBlueTeam);
-
 	}
 
 	if (AbilityTemplate != nullptr)
@@ -85,7 +83,6 @@ void AUE5TopDownARPGCharacter::BeginPlay()
 		HealthbarWidget->SetPercent(HealthPercent);
 	}
 }
-
 
 void AUE5TopDownARPGCharacter::ServerSetTeam_Implementation(bool bNewIsBlueTeam)
 {
@@ -104,7 +101,6 @@ void AUE5TopDownARPGCharacter::ServerSetTeam_Implementation(bool bNewIsBlueTeam)
 	// You can add server-side logic here if needed
 	UE_LOG(LogTemp, Warning, TEXT("Server: bIsBlueTeam set to %d"), bIsBlueTeam);
 }
-
 
 void AUE5TopDownARPGCharacter::Tick(float DeltaSeconds)
 {
@@ -143,7 +139,6 @@ bool AUE5TopDownARPGCharacter::ActivateAbility(FVector Location)
 }
 void AUE5TopDownARPGCharacter::ResetPlayerHelper()
 {
-
 	UE_LOG(LogUE5TopDownARPG, Warning, TEXT("ResetPlayerLog"));
 	USkeletalMeshComponent* skeletalMesh = FindComponentByClass<USkeletalMeshComponent>();
 	UCapsuleComponent* capsuleComponent = FindComponentByClass<UCapsuleComponent>();
@@ -192,28 +187,6 @@ void AUE5TopDownARPGCharacter::TakeAnyDamage(AActor* DamagedActor, float Damage,
 	}
 }
 
-void AUE5TopDownARPGCharacter::PickUp_Implementation()
-{
-	USkeletalMeshComponent* skeletalMesh = FindComponentByClass<USkeletalMeshComponent>();
-	if (skeletalMesh)
-	{
-		UE_LOG(LogUE5TopDownARPG, Log, TEXT("Picked Ball"));
-		if (queueBallsInRange.Peek())
-		{
-			(*queueBallsInRange.Peek())->OnPickUp(skeletalMesh);
-			queueBallsInRange.Dequeue(ABallInHand);
-		}
-	}
-}
-
-void AUE5TopDownARPGCharacter::Throw_Implementation(FVector Location)
-{
-	ABallInHand->OnThrow(Location);
-}
-
-
-
-
 void AUE5TopDownARPGCharacter::OnRep_SetHealth(float OldHealth)
 {
 	if (GEngine)
@@ -247,7 +220,6 @@ void AUE5TopDownARPGCharacter::Death()
 		PlayerController->OnPlayerDied();
 	}
 	Destroy();
-
 }
 
 void AUE5TopDownARPGCharacter::PickUp_Implementation()
@@ -267,8 +239,4 @@ void AUE5TopDownARPGCharacter::PickUp_Implementation()
 void AUE5TopDownARPGCharacter::Throw_Implementation(FVector Location)
 {
 	ABallInHand->OnThrow(Location);
-
-	//USkeletalMeshComponent* skeletalMesh = FindComponentByClass<USkeletalMeshComponent>();
-	//skeletalMesh->SetCollisionProfileName("Ragdoll");
-	//skeletalMesh->SetSimulatePhysics(true);
 }
