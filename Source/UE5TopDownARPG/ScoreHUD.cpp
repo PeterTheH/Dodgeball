@@ -9,7 +9,6 @@
 #include "UE5TopDownARPGGameMode.h"
 #include "UE5TopDownARPGGameStateBase.h"
 
-
 void AScoreHUD::BeginPlay()
 {
 	Super::BeginPlay();
@@ -33,11 +32,10 @@ void AScoreHUD::UpdateScoreText(bool isBlue)
 		//AUE5TopDownARPGGameMode* GameMode = Cast<AUE5TopDownARPGGameMode>(GetWorld()->GetAuthGameMode());
 		AUE5TopDownARPGGameStateBase* GameState = Cast<AUE5TopDownARPGGameStateBase>(GetWorld()->GetGameState());
 
-
 		if (isBlue)
-			GameState->blueScore++;
-		else
 			GameState->redScore++;
+		else
+			GameState->blueScore++;
 
 		VisualUpdate();
 	}
