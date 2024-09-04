@@ -58,6 +58,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bIsHoldingBall = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
+	bool bIsDead = false;
+
 	//UPROPERTY(ReplicatedUsing = OnRep_CollisionResponse)
 	//TEnumAsByte<ECollisionResponse> CollisionResponse;
 
