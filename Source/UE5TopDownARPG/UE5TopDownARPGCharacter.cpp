@@ -19,6 +19,7 @@
 #include "Net/UnrealNetwork.h"
 #include "TimerManager.h"
 #include "SavePlayerState.h"
+#include "ScoreHUD.h"
 
 AUE5TopDownARPGCharacter::AUE5TopDownARPGCharacter()
 {
@@ -163,6 +164,11 @@ void AUE5TopDownARPGCharacter::Multicast_ResetPlayer_Implementation()
 }
 void AUE5TopDownARPGCharacter::Server_ResetPlayer_Implementation()
 {
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	AScoreHUD* ScoreHUD = Cast<AScoreHUD>(PlayerController->GetHUD());
+
+	ScoreHUD->UpdateScoreText(bIsBlueTeam);
+
 	ResetPlayerHelper();
 	Multicast_ResetPlayer();
 }

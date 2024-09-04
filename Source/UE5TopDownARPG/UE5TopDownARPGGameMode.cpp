@@ -4,9 +4,12 @@
 #include "UE5TopDownARPGPlayerController.h"
 #include "UE5TopDownARPGCharacter.h"
 #include "UE5TopDownARPGGameStateBase.h"
+#include "ScoreHUD.h"
 #include "UObject/ConstructorHelpers.h"
 #include "UE5TopDownARPG.h"
 #include "SavePlayerState.h"
+#include "Net/UnrealNetwork.h"
+
 
 AUE5TopDownARPGGameMode::AUE5TopDownARPGGameMode()
 {
@@ -26,6 +29,33 @@ AUE5TopDownARPGGameMode::AUE5TopDownARPGGameMode()
 	{
 		PlayerControllerClass = PlayerControllerBPClass.Class;
 	}
+
+	static ConstructorHelpers::FClassFinder<AScoreHUD> ScoreHUDBP(TEXT("/Game/TopDown/Blueprints/BP_ScoreHUD"));
+	if (ScoreHUDBP.Class != NULL)
+	{
+		UE_LOG(LogUE5TopDownARPG, Log, TEXT("Score HUD Spawned"));
+		HUDClass = ScoreHUDBP.Class;
+	}
+	else {
+		UE_LOG(LogUE5TopDownARPG, Log, TEXT("Score HUD Not Found"));
+	}
+
+	static ConstructorHelpers::FClassFinder<AUE5TopDownARPGGameStateBase> GameStateBaseBP(TEXT("/Game/TopDown/Blueprints/BP_GameStateBase"));
+	if (GameStateBaseBP.Class != NULL)
+	{
+		GameStateClass = GameStateBaseBP.Class;
+	}
+
+	bReplicates = true;
+}
+
+void AUE5TopDownARPGGameMode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AUE5TopDownARPGGameMode, blueScore);
+	DOREPLIFETIME(AUE5TopDownARPGGameMode, redScore);
+
 }
 
 void AUE5TopDownARPGGameMode::EndGame(bool IsWin)
@@ -38,34 +68,4 @@ void AUE5TopDownARPGGameMode::EndGame(bool IsWin)
 	{
 		UE_LOG(LogUE5TopDownARPG, Log, TEXT("Lose"));
 	}
-}
-
-void AUE5TopDownARPGGameMode::PostLogin(APlayerController* NewPlayer)
-{
-	Super::PostLogin(NewPlayer);
-
-	//bIsBlueTeam = ASavePlayerState::GetPlayerTeam();
-	/*bIsBlueTeam = GetWorld()->GetGameState<AUE5TopDownARPGGameStateBase>()->isBlueTeam;
-
-	if (NewPlayer)
-	{
-		APawn* PlayerPawn = NewPlayer->GetPawn();
-		AUE5TopDownARPGCharacter* Player = Cast<AUE5TopDownARPGCharacter>(PlayerPawn);
-
-		if (PlayerPawn)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("IsBlue: %d"), bIsBlueTeam);
-
-			if (bIsBlueTeam)
-			{
-				Player->bIsBlueTeam = true;
-				PlayerPawn->SetActorLocation(FVector(0.0f, 700.0f, 100.0f));
-			}
-			else
-			{
-				Player->bIsBlueTeam = false;
-				PlayerPawn->SetActorLocation(FVector(0.0f, -700.0f, 100.0f));
-			}
-		}
-	}*/
 }

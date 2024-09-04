@@ -18,9 +18,14 @@ public:
 
 	AUE5TopDownARPGGameStateBase();
 
-	UPROPERTY(Replicated)
-	bool isBlueTeam = true;
+	UPROPERTY(ReplicatedUsing = OnRep_Score)
+	int blueScore = 0;
+	UPROPERTY(ReplicatedUsing = OnRep_Score)
+	int redScore = 0;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UFUNCTION()
+	void OnRep_Score();
 
 };

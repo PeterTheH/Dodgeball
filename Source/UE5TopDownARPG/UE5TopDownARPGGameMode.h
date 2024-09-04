@@ -17,10 +17,13 @@ public:
 	UPROPERTY()
 	bool bIsBlueTeam = true;
 
+	UPROPERTY(Replicated)
+	int blueScore = 0;
+	UPROPERTY(Replicated)
+	int redScore = 0;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+
 	void EndGame(bool IsWin);
-
-	virtual void PostLogin(APlayerController* NewPlayer) override;
 };
-
-
-

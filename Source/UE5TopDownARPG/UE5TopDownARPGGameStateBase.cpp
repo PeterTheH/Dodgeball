@@ -3,16 +3,24 @@
 
 #include "UE5TopDownARPGGameStateBase.h"
 #include "Net/UnrealNetwork.h"
+#include "ScoreHUD.h"
 
 AUE5TopDownARPGGameStateBase::AUE5TopDownARPGGameStateBase()
 {
-	bReplicates = true;  // Ensure the GameState itself is replicating
+	bReplicates = true; 
 }
 
 void AUE5TopDownARPGGameStateBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	// Add the isBlueTeam variable to the list of replicated properties
-	DOREPLIFETIME(AUE5TopDownARPGGameStateBase, isBlueTeam);
+	DOREPLIFETIME(AUE5TopDownARPGGameStateBase, blueScore);
+	DOREPLIFETIME(AUE5TopDownARPGGameStateBase, redScore);
+}
+
+void AUE5TopDownARPGGameStateBase::OnRep_Score()
+{
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	AScoreHUD* ScoreHUD = Cast<AScoreHUD>(PlayerController->GetHUD());
+	ScoreHUD->VisualUpdate();
 }
