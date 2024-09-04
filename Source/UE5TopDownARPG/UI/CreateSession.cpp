@@ -13,15 +13,12 @@
 
 void UCreateSession::CreateSession(TSharedPtr<const FUniqueNetId> UserId, FName SessionName, bool bIsLAN, bool bIsPresence, int32 MaxNumPlayers)
 {
-	// Get the Online Subsystem to work with
 	IOnlineSubsystem* const OnlineSub = IOnlineSubsystem::Get();
 
 	if (OnlineSub)
 	{
-		// Get the Session Interface, so we can call the "CreateSession" function on it
 		IOnlineSessionPtr Sessions = OnlineSub->GetSessionInterface();
 
-		// Destroy any existing session with the same name
 		if (Sessions->GetNamedSession(SessionName))
 		{
 			UE_LOG(LogTemp, Log, TEXT("Session already exists, destroying it first."));
@@ -30,12 +27,6 @@ void UCreateSession::CreateSession(TSharedPtr<const FUniqueNetId> UserId, FName 
 
 		if (Sessions.IsValid() && UserId.IsValid())
 		{
-			/*
-				Fill in all the Session Settings that we want to use.
-
-				There are more with SessionSettings.Set(...);
-				For example the Map or the GameMode/Type.
-			*/
 			SessionSettings = MakeShareable(new FOnlineSessionSettings());
 
 			SessionSettings->bIsLANMatch = bIsLAN;
@@ -50,18 +41,14 @@ void UCreateSession::CreateSession(TSharedPtr<const FUniqueNetId> UserId, FName 
 
 			SessionSettings->Set(SETTING_MAPNAME, FString("DodgeballMap"), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
-			// Set the delegate to the Handle of the SessionInterface
 			OnCreateSessionCompleteDelegateHandle = Sessions->AddOnCreateSessionCompleteDelegate_Handle(
 				FOnCreateSessionCompleteDelegate::CreateUObject(this, &UCreateSession::OnCreateSessionComplete)
 			);
 
-			// Our delegate should get called when this is complete (doesn't need to be successful!)
-			//return Sessions->CreateSession(0, SessionName, *SessionSettings);
 
 			if (!Sessions->CreateSession(*UserId, SessionName, *SessionSettings))
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Failed to create session!"));
-				// Handle the error or retry creating the session
 			}
 		}
 	}
@@ -75,27 +62,20 @@ void UCreateSession::OnCreateSessionComplete(FName SessionName, bool bWasSuccess
 {
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OnCreateSessionComplete %s, %d"), *SessionName.ToString(), bWasSuccessful));
 
-	// Get the OnlineSubsystem so we can get the Session Interface
 	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
 	if (OnlineSub)
 	{
-		// Get the Session Interface to call the StartSession function
 		IOnlineSessionPtr Sessions = OnlineSub->GetSessionInterface();
 
 		if (Sessions.IsValid())
 		{
-			// Clear the SessionComplete delegate handle, since we finished this call
 			Sessions->ClearOnCreateSessionCompleteDelegate_Handle(OnCreateSessionCompleteDelegateHandle);
 			if (bWasSuccessful)
 			{
-				// Set the StartSession delegate handle
-				//OnStartSessionCompleteDelegateHandle = Sessions->AddOnStartSessionCompleteDelegate_Handle(OnStartSessionCompleteDelegate);
-
 				OnStartSessionCompleteDelegateHandle = Sessions->AddOnStartSessionCompleteDelegate_Handle(
 					FOnStartSessionCompleteDelegate::CreateUObject(this, &UCreateSession::OnStartOnlineGameComplete)
 				);
 
-				// Our StartSessionComplete delegate should get called after this
 				Sessions->StartSession(SessionName);
 			}
 		}
@@ -106,25 +86,20 @@ void UCreateSession::OnStartOnlineGameComplete(FName SessionName, bool bWasSucce
 {
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OnStartSessionComplete %s, %d"), *SessionName.ToString(), bWasSuccessful));
 
-	// Get the Online Subsystem so we can get the Session Interface
 	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
 	if (OnlineSub)
 	{
-		// Get the Session Interface to clear the Delegate
 		IOnlineSessionPtr Sessions = OnlineSub->GetSessionInterface();
 		if (Sessions.IsValid())
 		{
-			// Clear the delegate, since we are done with this call
 			Sessions->ClearOnStartSessionCompleteDelegate_Handle(OnStartSessionCompleteDelegateHandle);
 		}
 
 		UE_LOG(LogTemp, Log, TEXT("Session State Before: %s"), ToString(Sessions->GetNamedSession(SessionName)->SessionState));
 	}
 
-	// If the start was successful, we can open a NewMap if we want. Make sure to use "listen" as a parameter!
 	if (bWasSuccessful)
 	{
-		// Open the level
 		UGameplayStatics::OpenLevel(GetWorld(), FName("DodgeballMap"), true, FString("listen"));
 	}
 	else
@@ -143,18 +118,15 @@ void UCreateSession::FindGameSessions(FString OptionalIPAddr)
 	IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface();
 	if (!SessionInterface.IsValid()) return;
 
-	// Create a search settings object
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
 	SessionSearch->MaxSearchResults = 25;  // Limit the number of search results
 	SessionSearch->bIsLanQuery = true;     // LAN or Internet?
 	SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
 
-	// Bind the delegate
 	OnFindSessionsCompleteDelegateHandle = SessionInterface->AddOnFindSessionsCompleteDelegate_Handle(
 		FOnFindSessionsCompleteDelegate::CreateUObject(this, &UCreateSession::OnFindSessionsComplete)
 	);
 
-	// Start the search
 	SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
 }
 
@@ -166,12 +138,10 @@ void UCreateSession::OnFindSessionsComplete(bool bWasSuccessful)
 	IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface();
 	if (!SessionInterface.IsValid()) return;
 
-	// Remove the delegate
 	SessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(OnFindSessionsCompleteDelegateHandle);
 
 	if (bWasSuccessful && SessionSearch->SearchResults.Num() > 0)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Found %d sessions."), SessionSearch->SearchResults.Num());
 
 		FName ExistingSessionName = "SessionName";
 		if (SessionInterface->GetNamedSession(ExistingSessionName))
@@ -179,10 +149,8 @@ void UCreateSession::OnFindSessionsComplete(bool bWasSuccessful)
 			SessionInterface->DestroySession(ExistingSessionName);
 		}
 
-		// Join the first session found
 		const FOnlineSessionSearchResult& SearchResult = SessionSearch->SearchResults[0];
 
-		// Bind the delegate for OnJoinSessionComplete
 		OnJoinSessionCompleteDelegateHandle = SessionInterface->AddOnJoinSessionCompleteDelegate_Handle(
 			FOnJoinSessionCompleteDelegate::CreateUObject(this, &UCreateSession::OnJoinSessionComplete)
 		);
@@ -208,7 +176,6 @@ void UCreateSession::OnJoinSessionComplete(FName SessionName, EOnJoinSessionComp
 
 	SessionInterface->ClearOnJoinSessionCompleteDelegate_Handle(OnJoinSessionCompleteDelegateHandle);
 
-	// Check if the join was successful
 	if (Result == EOnJoinSessionCompleteResult::Success)
 	{
 		FString ConnectString;
@@ -244,20 +211,12 @@ void UCreateSession::OnJoinSessionComplete(FName SessionName, EOnJoinSessionComp
 
 void UCreateSession::CreateSessionBP(FName SessionName, bool bIsLAN, bool bIsPresence, int32 MaxNumPlayers)
 {
-	// Creating a local player where we can get the UserID from
 	const TSharedPtr<const FUniqueNetId> netID = UGameplayStatics::GetGameInstance(GetWorld())->GetFirstGamePlayer()->GetPreferredUniqueNetId().GetUniqueNetId();
 
-	// Call our custom HostSession function. GameSessionName is a GameInstance variable
 	CreateSession(netID, SessionName, bIsLAN, bIsPresence, MaxNumPlayers);
 }
 
 void UCreateSession::ChangeTeams(bool bIsBlue)
 {
-	//APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	//AUE5TopDownARPGGameMode* GM = Cast<AUE5TopDownARPGGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
-
 	ASavePlayerState::SetPlayerTeam(bIsBlue);
-
-	//AUE5TopDownARPGGameStateBase* GameState = GetWorld()->GetGameState<AUE5TopDownARPGGameStateBase>();
-	//GameState->isBlueTeam = bIsBlue;
 }
